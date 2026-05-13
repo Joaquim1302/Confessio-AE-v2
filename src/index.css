@@ -54,10 +54,10 @@
 }
 
 .btn-primary {
-  @apply w-full py-4 bg-app-ink text-white text-[11px] font-sans uppercase tracking-[0.2em] hover:opacity-90 transition-all;
+  @apply w-full h-12 bg-app-ink text-white text-[11px] font-sans uppercase tracking-[0.2em] hover:opacity-90 transition-all flex items-center justify-center;
 }
 
 .btn-secondary {
-  @apply w-full py-3 border border-app-ink text-[11px] font-sans uppercase tracking-[0.2em] hover:bg-app-ink hover:text-white transition-all;
+  @apply w-full h-11 border border-app-ink text-[11px] font-sans uppercase tracking-[0.2em] hover:bg-app-ink hover:text-white transition-all flex items-center justify-center;
 }
 

@@ -22,6 +22,13 @@ import com.arautos.confessioae.data.repository.ExaminationDataProvider
 import com.arautos.confessioae.ui.components.ConfessioButton
 import com.arautos.confessioae.ui.viewmodel.ExaminationViewModel
 
+/**
+ * Representa a porta de entrada do aplicativo.
+ * 
+ * Esta tela tem o propósito de acolher o fiel e fornecer as orientações iniciais para uma boa confissão.
+ * A decisão de incluir os 7 passos diretamente aqui visa garantir que o usuário tenha o contexto espiritual 
+ * necessário antes de iniciar o exame técnico.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -109,6 +116,13 @@ fun HomeScreen(navController: NavController) {
     }
 }
 
+/**
+ * Implementa o fluxo guiado do exame de consciência.
+ * 
+ * Utiliza um padrão de "wizard" (passo a passo) para evitar a sobrecarga cognitiva, dado que a lista 
+ * de pecados é extensa. A navegação entre categorias permite que o fiel reflita sobre diferentes 
+ * aspectos da vida (Deus, Próximo, Consigo) de forma organizada.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExaminationScreen(navController: NavController, viewModel: ExaminationViewModel) {
@@ -204,6 +218,13 @@ fun ExaminationItemRow(item: com.arautos.confessioae.data.model.ExaminationItem,
     }
 }
 
+/**
+ * Exibe a lista final de itens marcados para auxiliar no momento da confissão.
+ * 
+ * Regra de Negócio: Por motivos de privacidade e natureza sensível dos dados, os itens não são 
+ * persistidos permanentemente em servidores. O botão de apagar dados é destacado para reforçar 
+ * ao usuário que ele tem controle total sobre suas informações após o sacramento.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListScreen(navController: NavController, viewModel: ExaminationViewModel) {
@@ -257,6 +278,13 @@ fun ListScreen(navController: NavController, viewModel: ExaminationViewModel) {
     }
 }
 
+/**
+ * Tela informativa e de configurações de privacidade.
+ * 
+ * Centraliza a atribuição dos créditos (Arautos do Evangelho) e oferece funcionalidades de 
+ * segurança. A funcionalidade de "Bloquear ao iniciar" é um workaround simulado nesta versão 
+ * para demonstrar a intenção de privacidade sem implementar biometria complexa no MVP.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutScreen(navController: NavController, viewModel: ExaminationViewModel) {

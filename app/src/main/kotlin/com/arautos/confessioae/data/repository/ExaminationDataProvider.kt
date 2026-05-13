@@ -3,6 +3,12 @@ package com.arautos.confessioae.data.repository
 import com.arautos.confessioae.data.model.Category
 import com.arautos.confessioae.data.model.ExaminationItem
 
+/**
+ * Provedor de dados estáticos para o Exame de Consciência.
+ * 
+ * Fonte dos Dados: O conteúdo textual é baseado no exame de consciência dos Arautos do Evangelho.
+ * A estrutura em lista flat facilita a filtragem dinâmica por categoria nas telas de UI.
+ */
 object ExaminationDataProvider {
     val items = listOf(
         // Relations with God

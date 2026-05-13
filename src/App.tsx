@@ -134,12 +134,18 @@ const HomePage: React.FC = () => {
             <li className="flex gap-2"><span className="text-app-accent">7</span> Aceitar a penitência imposta pelo confessor</li>
           </ul>
         </div>
-        <div className="pt-4 md:pt-8 w-full max-w-xs mx-auto">
+        <div className="pt-4 md:pt-8 w-full max-w-xs mx-auto space-y-4">
           <button 
             onClick={() => navigate('/exame')}
             className="btn-primary"
           >
             Exame de Consciência
+          </button>
+          <button
+            onClick={() => navigate('/sobre')}
+            className="btn-primary"
+          >
+            Sobre o Aplicativo
           </button>
         </div>
       </aside>

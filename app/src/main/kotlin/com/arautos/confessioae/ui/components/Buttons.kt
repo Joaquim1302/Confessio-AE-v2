@@ -1,5 +1,6 @@
 package com.arautos.confessioae.ui.components
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Button
@@ -18,6 +19,13 @@ import com.arautos.confessioae.ui.theme.ConfessioAETheme
 import com.arautos.confessioae.ui.theme.Ink
 import com.arautos.confessioae.ui.theme.Montserrat
 
+/**
+ * Componente de botão padronizado do aplicativo.
+ * 
+ * Decisão de Design: O uso de [RectangleShape] e tipografia em caixa alta visa evocar uma 
+ * estética solene e sóbria, adequada para um aplicativo de natureza religiosa e introspectiva.
+ * A ausência de sombras (elevation = 0.dp) reforça o estilo minimalista e plano do projeto.
+ */
 @Composable
 fun ConfessioButton(
     text: String,
@@ -30,8 +38,9 @@ fun ConfessioButton(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp),
+            .height(48.dp), // Reduzido de 56.dp para 48.dp para padronizar a altura
         shape = RectangleShape,
+        contentPadding = PaddingValues(0.dp), // Remove padding interno para garantir altura exata de 48.dp
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
             contentColor = contentColor
