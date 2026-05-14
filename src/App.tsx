@@ -117,7 +117,7 @@ const HomePage: React.FC = () => {
           <div className="transform -rotate-45 text-app-accent text-xl md:text-2xl font-serif">†</div>
         </div>
         <div className="text-center space-y-4">
-          <h2 className="text-2xl md:text-4xl font-light tracking-tight italic">O Sacramento da Confissão</h2>
+          <h2 className="text-2xl md:text-4xl font-light tracking-tight italic font-infant">O Sacramento da Confissão</h2>
           <p className="text-app-muted text-[10px] md:text-xs uppercase tracking-[0.3em] font-medium leading-relaxed">
             “Vinde a Mim todos vós que estais cansados e oprimidos e Eu vos aliviarei” (Mt 11,28)
           </p>

@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,7 +15,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.arautos.confessioae.data.model.Category
 import com.arautos.confessioae.data.repository.ExaminationDataProvider
@@ -37,7 +36,7 @@ fun HomeScreen(navController: NavController) {
             CenterAlignedTopAppBar(
                 title = { 
                     Text(
-                        "C O N F E S I O  A E", 
+                        "C O N F E S S I O  A E",
                         style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier.padding(top = 15.dp)
                     ) 
@@ -57,7 +56,6 @@ fun HomeScreen(navController: NavController) {
             Text(
                 "O Sacramento da Confissão",
                 style = MaterialTheme.typography.headlineMedium,
-                fontStyle = FontStyle.Italic,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.padding(top = 10.dp)
             )
@@ -126,8 +124,8 @@ fun HomeScreen(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExaminationScreen(navController: NavController, viewModel: ExaminationViewModel) {
-    val categories = Category.values()
-    var currentStep by remember { mutableStateOf(0) }
+    val categories = Category.entries
+    var currentStep by remember { mutableIntStateOf(0) }
     val category = categories[currentStep]
     val items = ExaminationDataProvider.items.filter { it.category == category }
     val selectedIds by viewModel.selectedIds.collectAsState()
@@ -140,7 +138,7 @@ fun ExaminationScreen(navController: NavController, viewModel: ExaminationViewMo
                     IconButton(onClick = { 
                         if (currentStep > 0) currentStep-- else navController.popBackStack()
                     }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Voltar")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar")
                     }
                 }
             )
@@ -148,7 +146,7 @@ fun ExaminationScreen(navController: NavController, viewModel: ExaminationViewMo
     ) { padding ->
         Column(modifier = Modifier.padding(padding)) {
             LinearProgressIndicator(
-                progress = (currentStep + 1) / categories.size.toFloat(),
+                progress = { (currentStep + 1) / categories.size.toFloat() },
                 modifier = Modifier.fillMaxWidth()
             )
             LazyColumn(
@@ -236,7 +234,7 @@ fun ListScreen(navController: NavController, viewModel: ExaminationViewModel) {
                 title = { Text("Minha Lista para Confissão") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Voltar")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar")
                     }
                 }
             )
@@ -296,7 +294,7 @@ fun AboutScreen(navController: NavController, viewModel: ExaminationViewModel) {
                 title = { Text("Sobre o Aplicativo") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Voltar")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar")
                     }
                 }
             )
@@ -324,7 +322,7 @@ fun AboutScreen(navController: NavController, viewModel: ExaminationViewModel) {
                 style = MaterialTheme.typography.bodyMedium
             )
             
-            Divider(modifier = Modifier.padding(vertical = 8.dp))
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
             
             Row(
                 modifier = Modifier.fillMaxWidth(),

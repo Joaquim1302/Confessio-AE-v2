@@ -21,7 +21,7 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun ConfessioAETheme(
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     MaterialTheme(
         colorScheme = LightColorScheme,

@@ -2,10 +2,11 @@ package com.arautos.confessioae.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.googlefonts.Font
+import androidx.compose.ui.text.googlefonts.Font as GoogleFontRes
 import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.unit.sp
 import com.arautos.confessioae.R
@@ -17,27 +18,18 @@ val provider = GoogleFont.Provider(
 )
 
 val CormorantGaramond = FontFamily(
-    Font(
-        googleFont = GoogleFont("Cormorant Garamond"),
-        fontProvider = provider,
-        style = FontStyle.Italic
-    )
+    GoogleFontRes(googleFont = GoogleFont("Cormorant Garamond"), fontProvider = provider),
+    GoogleFontRes(googleFont = GoogleFont("Cormorant Garamond"), fontProvider = provider, style = FontStyle.Italic),
+)
+
+val CormorantInfant = FontFamily(
+    Font(R.font.cormorant_infant_regular, FontWeight.Normal),
+    Font(R.font.cormorant_infant_italic, FontWeight.Normal, FontStyle.Italic)
 )
 
 val Montserrat = FontFamily(
-    Font(
-        googleFont = GoogleFont("Montserrat"),
-        fontProvider = provider
-    )
-)
-
-val Spectral = FontFamily(
-    Font(
-        googleFont = GoogleFont("Spectral"),
-        fontProvider = provider,
-        weight = FontWeight.Light,
-        style = FontStyle.Italic
-    )
+    GoogleFontRes(googleFont = GoogleFont("Montserrat"), fontProvider = provider),
+    GoogleFontRes(googleFont = GoogleFont("Montserrat"), fontProvider = provider, style = FontStyle.Italic)
 )
 
 val Typography = Typography(
@@ -49,15 +41,15 @@ val Typography = Typography(
         letterSpacing = 0.sp
     ),
     headlineMedium = TextStyle(
-        fontFamily = Spectral,
-        fontWeight = FontWeight.Light,
+        fontFamily = CormorantInfant,
+        fontWeight = FontWeight.Normal,
         fontStyle = FontStyle.Italic,
         fontSize = 28.sp,
         lineHeight = 36.sp,
         letterSpacing = 0.sp
     ),
     headlineSmall = TextStyle(
-        fontFamily = CormorantGaramond,
+        fontFamily = CormorantInfant,
         fontWeight = FontWeight.Normal,
         fontSize = 24.sp,
         lineHeight = 32.sp,

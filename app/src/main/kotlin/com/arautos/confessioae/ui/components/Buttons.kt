@@ -32,7 +32,7 @@ fun ConfessioButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     containerColor: Color = Ink,
-    contentColor: Color = Color.White
+    contentColor: Color = Color.White,
 ) {
     Button(
         onClick = onClick,

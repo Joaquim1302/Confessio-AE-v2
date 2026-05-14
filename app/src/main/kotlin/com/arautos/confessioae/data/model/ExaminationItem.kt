@@ -4,7 +4,7 @@ data class ExaminationItem(
     val id: String,
     val text: String,
     val category: Category,
-    val note: String? = null
+    val note: String? = null,
 )
 
 enum class Category(val title: String, val description: String) {

@@ -1,13 +1,11 @@
 package com.arautos.confessioae.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.arautos.confessioae.data.model.ExaminationItem
 import com.arautos.confessioae.data.repository.ExaminationDataProvider
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 
 /**
  * Gerencia o estado do exame de consciência e preferências de privacidade.
@@ -24,7 +22,7 @@ class ExaminationViewModel : ViewModel() {
      */
     val selectedIds: StateFlow<Set<String>> = _selectedIds.asStateFlow()
 
-    private val _isLocked = MutableStateFlow(false)
+    private val _isLocked = MutableStateFlow(value = false)
     /**
      * Estado da trava de privacidade. 
      * Implementado como um simulacro para validação de UX antes da integração com BiometricPrompt.
