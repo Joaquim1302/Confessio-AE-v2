@@ -16,7 +16,7 @@ sealed class ExamEntry {
     @Serializable
     data class Custom(
         override val id: String = UUID.randomUUID().toString(),
-        override val text: String
+        override val text: String,
     ) : ExamEntry()
 
     @Serializable

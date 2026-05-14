@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun NavigationTabs(selectedTab: Int, onTabSelected: (Int) -> Unit) {
     val tabs = listOf("Início", "Exame", "Lista", "Sobre")
-    
+
     TabRow(
         selectedTabIndex = selectedTab,
         containerColor = MaterialTheme.colorScheme.background,
@@ -33,9 +33,9 @@ fun NavigationTabs(selectedTab: Int, onTabSelected: (Int) -> Unit) {
                     Text(
                         text = title,
                         style = MaterialTheme.typography.labelLarge,
-                        color = if (selectedTab == index) 
-                            MaterialTheme.colorScheme.primary 
-                        else 
+                        color = if (selectedTab == index)
+                            MaterialTheme.colorScheme.primary
+                        else
                             MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                     )
                 }

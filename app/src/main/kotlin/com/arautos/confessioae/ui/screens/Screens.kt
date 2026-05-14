@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
@@ -352,14 +351,14 @@ fun ListaScreen(viewModel: ExaminationViewModel, onClear: () -> Unit) {
     if (showDialog) {
         CustomItemDialog(
             initialText = dialogText,
-            onDismiss = { showDialog = false },
+            onDismiss = { if (showDialog) showDialog = false },
             onSave = { text ->
                 if (editingItem != null) {
                     viewModel.updateCustomItem(editingItem!!.id, text)
                 } else {
                     viewModel.addCustomItem(text)
                 }
-                showDialog = false
+                if (showDialog) showDialog = false
             }
         )
     }
@@ -449,9 +448,17 @@ fun SobreScreen(viewModel: ExaminationViewModel, onClear: () -> Unit) {
             "Sobre o Aplicativo",
             style = MaterialTheme.typography.titleLarge
         )
+
         Text(
             "Este aplicativo foi desenvolvido para auxiliar fiéis católicos na preparação para o Sacramento da Confissão.",
             style = MaterialTheme.typography.bodyLarge
+        )
+        Image(
+            painter = painterResource(id = com.arautos.confessioae.R.drawable.icone_570),
+            contentDescription = "Ícone Arautos",
+            modifier = Modifier
+                .size(250.dp)
+                .align(Alignment.CenterHorizontally)
         )
         Text(
             "“Texto original do exame de consciência: Arautos do Evangelho”",
@@ -459,13 +466,7 @@ fun SobreScreen(viewModel: ExaminationViewModel, onClear: () -> Unit) {
             fontStyle = FontStyle.Italic,
             color = MaterialTheme.colorScheme.primary
         )
-        Image(
-            painter = painterResource(id = com.arautos.confessioae.R.drawable.icone_570),
-            contentDescription = "Ícone Arautos",
-            modifier = Modifier
-                .size(150.dp)
-                .align(Alignment.CenterHorizontally)
-        )
+
 
         Text(
             "Aplicativo sem fins lucrativos desenvolvido para auxiliar fiéis na preparação para o Sacramento da Confissão.",
@@ -474,14 +475,14 @@ fun SobreScreen(viewModel: ExaminationViewModel, onClear: () -> Unit) {
 
         
 
-        
-        ConfessioButton(
+
+      /*  ConfessioButton(
             text = "Excluir Todos os Dados",
             onClick = { 
                 viewModel.clearAllData()
                 onClear()
             },
             containerColor = MaterialTheme.colorScheme.error
-        )
+        )*/
     }
 }

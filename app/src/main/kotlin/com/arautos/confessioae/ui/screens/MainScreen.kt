@@ -30,21 +30,23 @@ fun MainScreen() {
                 ConfessioTopBar()
                 NavigationTabs(
                     selectedTab = selectedTab,
-                ) { selectedTab = it }
+                ) {
+                    selectedTab = it
+                }
             }
             // Fim da área superior fixa
-        }
+        },
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues),
         ) {
             when (selectedTab) {
                 0 -> HomeScreen()
-                1 -> ExameScreen(viewModel, onFinish = { selectedTab = 2 })
-                2 -> ListaScreen(viewModel, onClear = { selectedTab = 0 })
-                3 -> SobreScreen(viewModel, onClear = { selectedTab = 0 })
+                1 -> ExameScreen(viewModel) { selectedTab = 2 }
+                2 -> ListaScreen(viewModel) { selectedTab = 0 }
+                3 -> SobreScreen(viewModel) { selectedTab = 0 }
             }
         }
     }

@@ -4,12 +4,10 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arautos.confessioae.data.model.ExamEntry
-import com.arautos.confessioae.data.model.ExaminationItem
 import com.arautos.confessioae.data.repository.ConfessioRepository
 import com.arautos.confessioae.data.repository.ExaminationDataProvider
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 class ExaminationViewModel(application: Application) : AndroidViewModel(application) {
@@ -20,9 +18,6 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
 
     private val _customItems = MutableStateFlow<List<ExamEntry.Custom>>(emptyList())
     val customItems: StateFlow<List<ExamEntry.Custom>> = _customItems.asStateFlow()
-
-    private val _isLocked = MutableStateFlow(false)
-    val isLocked: StateFlow<Boolean> = _isLocked.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -35,7 +30,7 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
                 if (json != null) {
                     try {
                         _customItems.value = Json.decodeFromString<List<ExamEntry.Custom>>(json)
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         _customItems.value = emptyList()
                     }
                 }
@@ -81,16 +76,13 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
-    fun getSelectedItems(): List<ExaminationItem> {
-        return ExaminationDataProvider.items.filter { _selectedIds.value.contains(it.id) }
-    }
-
     // Combine standard and custom items for the list screen
     fun getAllListEntries(): Flow<List<ExamEntry>> {
         return combine(selectedIds, customItems) { ids, customs ->
-            val standardEntries = ExaminationDataProvider.items
+            val standardEntries = ExaminationDataProvider.items.asSequence()
                 .filter { ids.contains(it.id) }
                 .map { ExamEntry.Standard(it.id, it.text) }
+                .toList()
             
             standardEntries + customs + ExamEntry.PermanentAdd
         }
@@ -102,9 +94,5 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
             _customItems.value = emptyList()
             repository.clearAll()
         }
-    }
-
-    fun toggleLock() {
-        _isLocked.value = !_isLocked.value
     }
 }
