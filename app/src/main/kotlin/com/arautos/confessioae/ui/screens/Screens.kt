@@ -6,6 +6,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -18,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.arautos.confessioae.data.model.Category
+import com.arautos.confessioae.data.model.ExamEntry
 import com.arautos.confessioae.data.model.ExaminationItem
 import com.arautos.confessioae.data.repository.ExaminationDataProvider
 import com.arautos.confessioae.ui.components.ConfessioButton
@@ -28,7 +31,7 @@ import com.arautos.confessioae.ui.viewmodel.ExaminationViewModel
  * Tela Inicial: Boas-vindas e orientações sobre o sacramento.
  */
 @Composable
-fun HomeScreen(onNavigateToExame: () -> Unit) {
+fun HomeScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -224,47 +227,104 @@ fun ExaminationItemRow(item: ExaminationItem, isSelected: Boolean, onToggle: () 
  */
 @Composable
 fun ListaScreen(viewModel: ExaminationViewModel, onClear: () -> Unit) {
-    val selectedItems = viewModel.getSelectedItems()
+    val entries by viewModel.getAllListEntries().collectAsState(initial = emptyList())
     // Estado para rastrear quais itens já foram marcados como confessados nesta sessão
     var confessedIds by rememberSaveable { mutableStateOf(setOf<String>()) }
+
+    // Estados para o diálogo de edição/adição
+    var showDialog by remember { mutableStateOf(false) }
+    var editingItem by remember { mutableStateOf<ExamEntry.Custom?>(null) }
+    var dialogText by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text(
             "Minha Lista para Confissão",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(bottom = 16.dp)
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.height(16.dp)
         )
+        Spacer(modifier = Modifier.height(16.dp))
         
-        if (selectedItems.isEmpty()) {
+        if (entries.size <= 1 && entries.firstOrNull() is ExamEntry.PermanentAdd) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text("Nenhum item marcado.", style = MaterialTheme.typography.bodyLarge, color = Color.Gray)
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("Nenhum item marcado.", style = MaterialTheme.typography.bodyLarge, color = Color.Gray)
+                    Spacer(modifier = Modifier.height(16.dp))
+                    PermanentAddItem(onClick = {
+                        editingItem = null
+                        dialogText = ""
+                        showDialog = true
+                    })
+                }
             }
         } else {
             LazyColumn(modifier = Modifier.weight(1f)) {
-                items(selectedItems) { item ->
-                    val isConfessed = confessedIds.contains(item.id)
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { 
-                                confessedIds = if (isConfessed) confessedIds - item.id else confessedIds + item.id 
+                items(entries, key = { it.id }) { entry ->
+                    when (entry) {
+                        is ExamEntry.Standard -> {
+                            val isConfessed = confessedIds.contains(entry.id)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { 
+                                        confessedIds = if (isConfessed) confessedIds - entry.id else confessedIds + entry.id 
+                                    }
+                                    .padding(vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Checkbox(
+                                    checked = isConfessed,
+                                    onCheckedChange = { checked ->
+                                        confessedIds = if (checked) confessedIds + entry.id else confessedIds - entry.id
+                                    }
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = entry.text,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = if (isConfessed) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f) else MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.weight(1f)
+                                )
                             }
-                            .padding(vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Checkbox(
-                            checked = isConfessed,
-                            onCheckedChange = { checked ->
-                                confessedIds = if (checked) confessedIds + item.id else confessedIds - item.id
+                        }
+                        is ExamEntry.Custom -> {
+                            val isConfessed = confessedIds.contains(entry.id)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { 
+                                        editingItem = entry
+                                        dialogText = entry.text
+                                        showDialog = true
+                                    }
+                                    .padding(vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Checkbox(
+                                    checked = isConfessed,
+                                    onCheckedChange = { checked ->
+                                        confessedIds = if (checked) confessedIds + entry.id else confessedIds - entry.id
+                                    }
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = entry.text,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = if (isConfessed) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f) else MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                IconButton(onClick = { viewModel.deleteCustomItem(entry.id) }) {
+                                    Icon(Icons.Default.Delete, contentDescription = "Remover", tint = MaterialTheme.colorScheme.error)
+                                }
                             }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = item.text,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = if (isConfessed) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f) else MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.weight(1f)
-                        )
+                        }
+                        is ExamEntry.PermanentAdd -> {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            PermanentAddItem(onClick = {
+                                editingItem = null
+                                dialogText = ""
+                                showDialog = true
+                            })
+                        }
                     }
                 }
                 item {
@@ -288,6 +348,89 @@ fun ListaScreen(viewModel: ExaminationViewModel, onClear: () -> Unit) {
             }
         }
     }
+
+    if (showDialog) {
+        CustomItemDialog(
+            initialText = dialogText,
+            onDismiss = { showDialog = false },
+            onSave = { text ->
+                if (editingItem != null) {
+                    viewModel.updateCustomItem(editingItem!!.id, text)
+                } else {
+                    viewModel.addCustomItem(text)
+                }
+                showDialog = false
+            }
+        )
+    }
+}
+
+@Composable
+fun PermanentAddItem(onClick: () -> Unit) {
+    Surface(
+        onClick = onClick,
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.small,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)),
+        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.2f)
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                Icons.Default.Add,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.size(20.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "pecado não relacionado ou uma dúvida",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    fontStyle = FontStyle.Italic,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            )
+        }
+    }
+}
+
+@Composable
+fun CustomItemDialog(
+    initialText: String,
+    onDismiss: () -> Unit,
+    onSave: (String) -> Unit
+) {
+    var text by remember { mutableStateOf(initialText) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(if (initialText.isEmpty()) "Adicionar Item" else "Editar Item") },
+        text = {
+            OutlinedTextField(
+                value = text,
+                onValueChange = { text = it },
+                modifier = Modifier.fillMaxWidth(),
+                label = { Text("Pecado ou dúvida") },
+                minLines = 3
+            )
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { onSave(text) },
+                enabled = text.isNotBlank()
+            ) {
+                Text("Salvar")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar")
+            }
+        }
+    )
 }
 
 /**
@@ -295,8 +438,6 @@ fun ListaScreen(viewModel: ExaminationViewModel, onClear: () -> Unit) {
  */
 @Composable
 fun SobreScreen(viewModel: ExaminationViewModel, onClear: () -> Unit) {
-    val isLocked by viewModel.isLocked.collectAsState()
-
     Column(
         modifier = Modifier
             .fillMaxSize()

@@ -18,7 +18,7 @@ import com.arautos.confessioae.data.model.Category
 @Composable
 fun ExameCategoryBar(
     selectedCategory: Category,
-    onCategorySelected: (Category) -> Unit
+    onCategorySelected: (Category) -> Unit,
 ) {
     val categories = Category.entries
     val cormorantItalic = FontFamily(Font(R.font.cormorant_infant_italic))
@@ -41,7 +41,7 @@ fun ExameCategoryBar(
                 onClick = { onCategorySelected(category) },
                 modifier = Modifier.weight(1f),
                 shape = RectangleShape,
-                color = if (isSelected) Color(0xF0EADA) else MaterialTheme.colorScheme.surface,
+                color = if (isSelected) Color(0xFFEAE1CA) else MaterialTheme.colorScheme.surface,
                 contentColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                 border = BorderStroke(
                     width = 1.dp,

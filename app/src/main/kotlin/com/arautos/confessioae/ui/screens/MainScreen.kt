@@ -30,8 +30,7 @@ fun MainScreen() {
                 ConfessioTopBar()
                 NavigationTabs(
                     selectedTab = selectedTab,
-                    onTabSelected = { selectedTab = it }
-                )
+                ) { selectedTab = it }
             }
             // Fim da área superior fixa
         }
@@ -42,7 +41,7 @@ fun MainScreen() {
                 .padding(paddingValues)
         ) {
             when (selectedTab) {
-                0 -> HomeScreen(onNavigateToExame = { selectedTab = 1 })
+                0 -> HomeScreen()
                 1 -> ExameScreen(viewModel, onFinish = { selectedTab = 2 })
                 2 -> ListaScreen(viewModel, onClear = { selectedTab = 0 })
                 3 -> SobreScreen(viewModel, onClear = { selectedTab = 0 })
