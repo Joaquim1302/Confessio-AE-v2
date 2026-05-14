@@ -15,177 +15,151 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.arautos.confessioae.data.model.Category
+import com.arautos.confessioae.data.model.ExaminationItem
 import com.arautos.confessioae.data.repository.ExaminationDataProvider
 import com.arautos.confessioae.ui.components.ConfessioButton
 import com.arautos.confessioae.ui.viewmodel.ExaminationViewModel
 
-/**
- * Representa a porta de entrada do aplicativo.
- * 
- * Esta tela tem o propósito de acolher o fiel e fornecer as orientações iniciais para uma boa confissão.
- * A decisão de incluir os 7 passos diretamente aqui visa garantir que o usuário tenha o contexto espiritual 
- * necessário antes de iniciar o exame técnico.
- */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController) {
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { 
-                    Text(
-                        "C O N F E S S I O  A E",
-                        style = MaterialTheme.typography.headlineSmall,
-                        modifier = Modifier.padding(top = 15.dp)
-                    ) 
-                },
-                modifier = Modifier.padding(top = 10.dp)
-            )
-        }
-    ) { padding ->
+fun HomeScreen(onNavigateToExame: () -> Unit, onNavigateToSobre: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp)
+            .verticalScroll(rememberScrollState()),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            "O Sacramento da Confissão",
+            style = MaterialTheme.typography.headlineMedium,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 10.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            "“Vinde a Mim todos vós que estais cansados e oprimidos e Eu vos aliviarei” (Mt 11,28)",
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            "Para fazer uma boa confissão",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Normal,
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(12.dp))
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Text(
-                "O Sacramento da Confissão",
-                style = MaterialTheme.typography.headlineMedium,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.padding(top = 10.dp)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                "“Vinde a Mim todos vós que estais cansados e oprimidos e Eu vos aliviarei” (Mt 11,28)",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            Text(
-                "Para fazer uma boa confissão",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Normal,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Column(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                listOf(
-                    "1 Ter confiança no perdão de Deus",
-                    "2 Fazer bem o exame de consciência",
-                    "3 Ter dor e arrependimento dos próprios pecados",
-                    "4 Fazer o propósito de nunca mais os cometer",
-                    "5 Dizer os próprios pecados ao confessor, sem esconder nenhum, evitando divagações",
-                    "6 Referir, em relação aos pecados graves, quanto possível, o seu número",
-                    "7 Aceitar a penitência imposta pelo confessor"
-                ).forEach { item ->
-                    Text(
-                        item,
-                        style = MaterialTheme.typography.bodySmall,
-                        textAlign = TextAlign.Start
-                    )
-                }
+            listOf(
+                "1 Ter confiança no perdão de Deus",
+                "2 Fazer bem o exame de consciência",
+                "3 Ter dor e arrependimento dos próprios pecados",
+                "4 Fazer o propósito de nunca mais os cometer",
+                "5 Dizer os próprios pecados ao confessor, sem esconder nenhum, evitando divagações",
+                "6 Referir, em relação aos pecados graves, quanto possível, o seu número",
+                "7 Aceitar a penitência imposta pelo confessor"
+            ).forEach { item ->
+                Text(
+                    item,
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Start
+                )
             }
-            Spacer(modifier = Modifier.height(32.dp))
-            ConfessioButton(
-                text = "Exame de Consciência",
-                onClick = { navController.navigate("examination") }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            ConfessioButton(
-                text = "Sobre o Aplicativo",
-                onClick = { navController.navigate("about") }
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            Text(
-                "Texto original: Arautos do Evangelho",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
         }
+        Spacer(modifier = Modifier.height(32.dp))
+        ConfessioButton(
+            text = "Exame de Consciência",
+            onClick = onNavigateToExame
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        ConfessioButton(
+            text = "Sobre o Aplicativo",
+            onClick = onNavigateToSobre
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            "Texto original: Arautos do Evangelho",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 
-/**
- * Implementa o fluxo guiado do exame de consciência.
- * 
- * Utiliza um padrão de "wizard" (passo a passo) para evitar a sobrecarga cognitiva, dado que a lista 
- * de pecados é extensa. A navegação entre categorias permite que o fiel reflita sobre diferentes 
- * aspectos da vida (Deus, Próximo, Consigo) de forma organizada.
- */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExaminationScreen(navController: NavController, viewModel: ExaminationViewModel) {
+fun ExameScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit) {
     val categories = Category.entries
     var currentStep by remember { mutableIntStateOf(0) }
     val category = categories[currentStep]
     val items = ExaminationDataProvider.items.filter { it.category == category }
     val selectedIds by viewModel.selectedIds.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(category.title) },
-                navigationIcon = {
-                    IconButton(onClick = { 
-                        if (currentStep > 0) currentStep-- else navController.popBackStack()
-                    }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar")
-                    }
+    Column(modifier = Modifier.fillMaxSize()) {
+        LinearProgressIndicator(
+            progress = { (currentStep + 1) / categories.size.toFloat() },
+            modifier = Modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.primary,
+            trackColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+        )
+        
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (currentStep > 0) {
+                IconButton(onClick = { currentStep-- }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar")
                 }
+            }
+            Text(
+                text = category.title,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(start = if (currentStep > 0) 8.dp else 0.dp)
             )
         }
-    ) { padding ->
-        Column(modifier = Modifier.padding(padding)) {
-            LinearProgressIndicator(
-                progress = { (currentStep + 1) / categories.size.toFloat() },
-                modifier = Modifier.fillMaxWidth()
-            )
-            LazyColumn(
-                modifier = Modifier.weight(1f).padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                item {
-                    Text(
-                        category.description,
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-                items(items) { item ->
-                    ExaminationItemRow(
-                        item = item,
-                        isSelected = selectedIds.contains(item.id),
-                        onToggle = { viewModel.toggleItem(item.id) }
-                    )
-                }
-                item {
-                    Spacer(modifier = Modifier.height(24.dp))
-                    ConfessioButton(
-                        text = if (currentStep < categories.size - 1) "Próximo" else "Ver Minha Lista",
-                        onClick = {
-                            if (currentStep < categories.size - 1) currentStep++
-                            else navController.navigate("list")
-                        }
-                    )
-                }
+
+        LazyColumn(
+            modifier = Modifier.weight(1f).padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            item {
+                Text(
+                    category.description,
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+            items(items) { item ->
+                ExaminationItemRow(
+                    item = item,
+                    isSelected = selectedIds.contains(item.id),
+                    onToggle = { viewModel.toggleItem(item.id) }
+                )
+            }
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+                ConfessioButton(
+                    text = if (currentStep < categories.size - 1) "Próximo" else "Ver Minha Lista",
+                    onClick = {
+                        if (currentStep < categories.size - 1) currentStep++
+                        else onFinish()
+                    }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
 }
 
 @Composable
-fun ExaminationItemRow(item: com.arautos.confessioae.data.model.ExaminationItem, isSelected: Boolean, onToggle: () -> Unit) {
+fun ExaminationItemRow(item: ExaminationItem, isSelected: Boolean, onToggle: () -> Unit) {
     Card(
         onClick = onToggle,
         modifier = Modifier.fillMaxWidth(),
@@ -216,36 +190,23 @@ fun ExaminationItemRow(item: com.arautos.confessioae.data.model.ExaminationItem,
     }
 }
 
-/**
- * Exibe a lista final de itens marcados para auxiliar no momento da confissão.
- * 
- * Regra de Negócio: Por motivos de privacidade e natureza sensível dos dados, os itens não são 
- * persistidos permanentemente em servidores. O botão de apagar dados é destacado para reforçar 
- * ao usuário que ele tem controle total sobre suas informações após o sacramento.
- */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ListScreen(navController: NavController, viewModel: ExaminationViewModel) {
+fun ListaScreen(viewModel: ExaminationViewModel, onClear: () -> Unit) {
     val selectedItems = viewModel.getSelectedItems()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Minha Lista para Confissão") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar")
-                    }
-                }
-            )
-        }
-    ) { padding ->
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+        Text(
+            "Minha Lista para Confissão",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+        
         if (selectedItems.isEmpty()) {
-            Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
+            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text("Nenhum item marcado.", style = MaterialTheme.typography.bodyLarge, color = Color.Gray)
             }
         } else {
-            LazyColumn(modifier = Modifier.padding(padding).padding(16.dp)) {
+            LazyColumn(modifier = Modifier.weight(1f)) {
                 items(selectedItems) { item ->
                     Text(
                         "• ${item.text}",
@@ -259,7 +220,7 @@ fun ListScreen(navController: NavController, viewModel: ExaminationViewModel) {
                         text = "Apagar todos os dados",
                         onClick = { 
                             viewModel.clearAllData()
-                            navController.popBackStack("home", false)
+                            onClear()
                         },
                         containerColor = MaterialTheme.colorScheme.error
                     )
@@ -276,73 +237,56 @@ fun ListScreen(navController: NavController, viewModel: ExaminationViewModel) {
     }
 }
 
-/**
- * Tela informativa e de configurações de privacidade.
- * 
- * Centraliza a atribuição dos créditos (Arautos do Evangelho) e oferece funcionalidades de 
- * segurança. A funcionalidade de "Bloquear ao iniciar" é um workaround simulado nesta versão 
- * para demonstrar a intenção de privacidade sem implementar biometria complexa no MVP.
- */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AboutScreen(navController: NavController, viewModel: ExaminationViewModel) {
+fun SobreScreen(viewModel: ExaminationViewModel, onClear: () -> Unit) {
     val isLocked by viewModel.isLocked.collectAsState()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Sobre o Aplicativo") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar")
-                    }
-                }
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .padding(24.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            "Sobre o Aplicativo",
+            style = MaterialTheme.typography.titleLarge
+        )
+        Text(
+            "Este aplicativo foi desenvolvido para auxiliar fiéis católicos na preparação para o Sacramento da Confissão.",
+            style = MaterialTheme.typography.bodyLarge
+        )
+        Text(
+            "“Texto original do exame de consciência: Arautos do Evangelho”",
+            style = MaterialTheme.typography.titleMedium,
+            fontStyle = FontStyle.Italic,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Text(
+            "Aplicativo sem fins lucrativos desenvolvido para auxiliar fiéis na preparação para o Sacramento da Confissão.",
+            style = MaterialTheme.typography.bodyMedium
+        )
+        
+        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+        
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                "Este aplicativo foi desenvolvido para auxiliar fiéis católicos na preparação para o Sacramento da Confissão.",
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Text(
-                "“Texto original do exame de consciência: Arautos do Evangelho”",
-                style = MaterialTheme.typography.titleMedium,
-                fontStyle = FontStyle.Italic,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                "Aplicativo sem fins lucrativos desenvolvido para auxiliar fiéis na preparação para o Sacramento da Confissão.",
-                style = MaterialTheme.typography.bodyMedium
-            )
-            
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-            
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("Bloquear ao iniciar (Simulado)", style = MaterialTheme.typography.bodyLarge)
-                Switch(checked = isLocked, onCheckedChange = { viewModel.toggleLock() })
-            }
-            
-            Spacer(modifier = Modifier.height(24.dp))
-            
-            ConfessioButton(
-                text = "Excluir Todos os Dados Locais",
-                onClick = { 
-                    viewModel.clearAllData()
-                    navController.popBackStack("home", false)
-                },
-                containerColor = MaterialTheme.colorScheme.error
-            )
+            Text("Bloquear ao iniciar (Simulado)", style = MaterialTheme.typography.bodyLarge)
+            Switch(checked = isLocked, onCheckedChange = { viewModel.toggleLock() })
         }
+        
+        Spacer(modifier = Modifier.height(24.dp))
+        
+        ConfessioButton(
+            text = "Excluir Todos os Dados Locais",
+            onClick = { 
+                viewModel.clearAllData()
+                onClear()
+            },
+            containerColor = MaterialTheme.colorScheme.error
+        )
     }
 }
