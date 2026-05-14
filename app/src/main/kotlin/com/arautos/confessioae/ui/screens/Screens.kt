@@ -8,9 +8,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -19,6 +21,7 @@ import com.arautos.confessioae.data.model.Category
 import com.arautos.confessioae.data.model.ExaminationItem
 import com.arautos.confessioae.data.repository.ExaminationDataProvider
 import com.arautos.confessioae.ui.components.ConfessioButton
+import com.arautos.confessioae.ui.components.ExameCategoryBar
 import com.arautos.confessioae.ui.viewmodel.ExaminationViewModel
 
 /**
@@ -111,11 +114,13 @@ fun HomeScreen(onNavigateToExame: () -> Unit) {
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(32.dp))
+            /*
+            Spacer(modifier = Modifier.height(16.dp))
             ConfessioButton(
                 text = "Exame de Consciência",
                 onClick = onNavigateToExame
             )
+            */
             Spacer(modifier = Modifier.height(24.dp))
             Text(
                 "Texto original: Arautos do Evangelho",
@@ -138,29 +143,15 @@ fun ExameScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit) {
     val selectedIds by viewModel.selectedIds.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
-    /**    LinearProgressIndicator(
-            progress = { (currentStep + 1) / categories.size.toFloat() },
-            modifier = Modifier.fillMaxWidth(),
-            color = MaterialTheme.colorScheme.primary,
-            trackColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
-        )
-    */
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (currentStep > 0) {
-                IconButton(onClick = { currentStep-- }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar")
-                }
+        // Parte 1: Barra de Opções Horizontal Fixa
+        ExameCategoryBar(
+            selectedCategory = category,
+            onCategorySelected = { newCategory ->
+                currentStep = categories.indexOf(newCategory)
             }
-            Text(
-                text = category.title,
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(start = if (currentStep > 0) 8.dp else 0.dp)
-            )
-        }
+        )
 
+        // Parte 3: Conteúdo (Descrição, Itens e Botão de Navegação)
         LazyColumn(
             modifier = Modifier.weight(1f).padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -202,7 +193,7 @@ fun ExaminationItemRow(item: ExaminationItem, isSelected: Boolean, onToggle: () 
         onClick = onToggle,
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface
+            containerColor = if (isSelected) Color(0xFFDBD9D2) else MaterialTheme.colorScheme.surface
         ),
         border = BorderStroke(1.dp, if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline)
     ) {
@@ -234,6 +225,8 @@ fun ExaminationItemRow(item: ExaminationItem, isSelected: Boolean, onToggle: () 
 @Composable
 fun ListaScreen(viewModel: ExaminationViewModel, onClear: () -> Unit) {
     val selectedItems = viewModel.getSelectedItems()
+    // Estado para rastrear quais itens já foram marcados como confessados nesta sessão
+    var confessedIds by rememberSaveable { mutableStateOf(setOf<String>()) }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text(
@@ -249,11 +242,30 @@ fun ListaScreen(viewModel: ExaminationViewModel, onClear: () -> Unit) {
         } else {
             LazyColumn(modifier = Modifier.weight(1f)) {
                 items(selectedItems) { item ->
-                    Text(
-                        "• ${item.text}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    )
+                    val isConfessed = confessedIds.contains(item.id)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { 
+                                confessedIds = if (isConfessed) confessedIds - item.id else confessedIds + item.id 
+                            }
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(
+                            checked = isConfessed,
+                            onCheckedChange = { checked ->
+                                confessedIds = if (checked) confessedIds + item.id else confessedIds - item.id
+                            }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = item.text,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = if (isConfessed) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f) else MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
                 }
                 item {
                     Spacer(modifier = Modifier.height(32.dp))
@@ -306,26 +318,24 @@ fun SobreScreen(viewModel: ExaminationViewModel, onClear: () -> Unit) {
             fontStyle = FontStyle.Italic,
             color = MaterialTheme.colorScheme.primary
         )
+        Image(
+            painter = painterResource(id = com.arautos.confessioae.R.drawable.icone_570),
+            contentDescription = "Ícone Arautos",
+            modifier = Modifier
+                .size(150.dp)
+                .align(Alignment.CenterHorizontally)
+        )
+
         Text(
             "Aplicativo sem fins lucrativos desenvolvido para auxiliar fiéis na preparação para o Sacramento da Confissão.",
             style = MaterialTheme.typography.bodyMedium
         )
+
         
-        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-        
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text("Bloquear ao iniciar (Simulado)", style = MaterialTheme.typography.bodyLarge)
-            Switch(checked = isLocked, onCheckedChange = { viewModel.toggleLock() })
-        }
-        
-        Spacer(modifier = Modifier.height(24.dp))
+
         
         ConfessioButton(
-            text = "Excluir Todos os Dados Locais",
+            text = "Excluir Todos os Dados",
             onClick = { 
                 viewModel.clearAllData()
                 onClear()

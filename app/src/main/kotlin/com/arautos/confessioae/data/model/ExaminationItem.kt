@@ -8,7 +8,7 @@ data class ExaminationItem(
 )
 
 enum class Category(val title: String, val description: String) {
-    DEUS("Relação com Deus", "1. Da minha relação com Deus:"),
-    PROXIMO("Relação com o Próximo", "2. Da minha relação para com meu próximo:"),
-    CONSIGO("Respeito para comigo", "3. Do meu respeito para comigo:")
+    DEUS("Relação com Deus", "Da minha relação com Deus:"),
+    PROXIMO("Relação com o Próximo", "Da minha relação para com meu próximo:"),
+    CONSIGO("Respeito para comigo", "Do meu respeito para comigo:")
 }
