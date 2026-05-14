@@ -17,7 +17,7 @@ fun ConfessioTopBar() {
         title = {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(top = 10.dp)
+                modifier = Modifier.padding(top = 20.dp)
             ) {
                 Text(
                     "C O N F E S S I O",

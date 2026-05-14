@@ -21,76 +21,114 @@ import com.arautos.confessioae.data.repository.ExaminationDataProvider
 import com.arautos.confessioae.ui.components.ConfessioButton
 import com.arautos.confessioae.ui.viewmodel.ExaminationViewModel
 
+/**
+ * Tela Inicial: Boas-vindas e orientações sobre o sacramento.
+ */
 @Composable
-fun HomeScreen(onNavigateToExame: () -> Unit, onNavigateToSobre: () -> Unit) {
+fun HomeScreen(onNavigateToExame: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp)
             .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            "O Sacramento da Confissão",
-            style = MaterialTheme.typography.headlineMedium,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 10.dp)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            "“Vinde a Mim todos vós que estais cansados e oprimidos e Eu vos aliviarei” (Mt 11,28)",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-        Text(
-            "Para fazer uma boa confissão",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Normal,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        Column(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+        Spacer(modifier = Modifier.height(30.dp))
+        // Início da moldura com fundo colorido e bordas
+        Surface(
+            color = Color(0xFFEEEAE4),
+            modifier = Modifier.fillMaxWidth()
         ) {
-            listOf(
-                "1 Ter confiança no perdão de Deus",
-                "2 Fazer bem o exame de consciência",
-                "3 Ter dor e arrependimento dos próprios pecados",
-                "4 Fazer o propósito de nunca mais os cometer",
-                "5 Dizer os próprios pecados ao confessor, sem esconder nenhum, evitando divagações",
-                "6 Referir, em relação aos pecados graves, quanto possível, o seu número",
-                "7 Aceitar a penitência imposta pelo confessor"
-            ).forEach { item ->
-                Text(
-                    item,
-                    style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Start
-                )
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
+                Column(
+                    modifier = Modifier.padding(vertical = 32.dp, horizontal = 24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        "O Sacramento da Confissão",
+                        style = MaterialTheme.typography.headlineMedium,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        "“Vinde a Mim todos vós que estais cansados e oprimidos e Eu vos aliviarei” (Mt 11,28)",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center
+                    )
+                }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
             }
         }
-        Spacer(modifier = Modifier.height(32.dp))
-        ConfessioButton(
-            text = "Exame de Consciência",
-            onClick = onNavigateToExame
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        ConfessioButton(
-            text = "Sobre o Aplicativo",
-            onClick = onNavigateToSobre
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-        Text(
-            "Texto original: Arautos do Evangelho",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        // Fim da moldura
+
+        Column(
+            modifier = Modifier
+                .padding(24.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                "Para fazer uma boa confissão",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Normal,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                val listItems = listOf(
+                    "1" to "Ter confiança no perdão de Deus",
+                    "2" to "Fazer bem o exame de consciência",
+                    "3" to "Ter dor e arrependimento dos próprios pecados",
+                    "4" to "Fazer o propósito de nunca mais os cometer",
+                    "5" to "Dizer os próprios pecados ao confessor, sem esconder nenhum, evitando divagações",
+                    "6" to "Referir, em relação aos pecados graves, quanto possível, o seu número",
+                    "7" to "Aceitar a penitência imposta pelo confessor"
+                )
+                listItems.forEach { (number, text) ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Text(
+                            text = number,
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                color = Color(0xFFA97F1A),
+                                fontSize = MaterialTheme.typography.bodySmall.fontSize * 0.7f,
+                                fontWeight = FontWeight.Bold
+                            ),
+                            modifier = Modifier.width(10.dp)
+                        )
+                        Text(
+                            text = text,
+                            style = MaterialTheme.typography.bodySmall,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(32.dp))
+            ConfessioButton(
+                text = "Exame de Consciência",
+                onClick = onNavigateToExame
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                "Texto original: Arautos do Evangelho",
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 
+/**
+ * Tela de Exame: Fluxo guiado para o exame de consciência por categorias.
+ */
 @Composable
 fun ExameScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit) {
     val categories = Category.entries
@@ -100,13 +138,13 @@ fun ExameScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit) {
     val selectedIds by viewModel.selectedIds.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        LinearProgressIndicator(
+    /**    LinearProgressIndicator(
             progress = { (currentStep + 1) / categories.size.toFloat() },
             modifier = Modifier.fillMaxWidth(),
             color = MaterialTheme.colorScheme.primary,
             trackColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
         )
-        
+    */
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -190,6 +228,9 @@ fun ExaminationItemRow(item: ExaminationItem, isSelected: Boolean, onToggle: () 
     }
 }
 
+/**
+ * Tela de Lista: Exibe os pecados selecionados para auxiliar na confissão.
+ */
 @Composable
 fun ListaScreen(viewModel: ExaminationViewModel, onClear: () -> Unit) {
     val selectedItems = viewModel.getSelectedItems()
@@ -237,6 +278,9 @@ fun ListaScreen(viewModel: ExaminationViewModel, onClear: () -> Unit) {
     }
 }
 
+/**
+ * Tela Sobre: Informações institucionais e configurações de privacidade.
+ */
 @Composable
 fun SobreScreen(viewModel: ExaminationViewModel, onClear: () -> Unit) {
     val isLocked by viewModel.isLocked.collectAsState()

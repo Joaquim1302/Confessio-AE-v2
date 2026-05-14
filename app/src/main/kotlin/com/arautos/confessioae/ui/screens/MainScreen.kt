@@ -15,6 +15,9 @@ import com.arautos.confessioae.ui.components.ConfessioTopBar
 import com.arautos.confessioae.ui.components.NavigationTabs
 import com.arautos.confessioae.ui.viewmodel.ExaminationViewModel
 
+/**
+ * Tela Principal: Gerencia o Scaffold, a TopBar e a navegação entre as abas.
+ */
 @Composable
 fun MainScreen() {
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
@@ -22,6 +25,7 @@ fun MainScreen() {
 
     Scaffold(
         topBar = {
+            // Início da área superior fixa (Título, Subtítulo e Abas)
             Column {
                 ConfessioTopBar()
                 NavigationTabs(
@@ -29,6 +33,7 @@ fun MainScreen() {
                     onTabSelected = { selectedTab = it }
                 )
             }
+            // Fim da área superior fixa
         }
     ) { paddingValues ->
         Column(
@@ -37,7 +42,7 @@ fun MainScreen() {
                 .padding(paddingValues)
         ) {
             when (selectedTab) {
-                0 -> HomeScreen(onNavigateToExame = { selectedTab = 1 }, onNavigateToSobre = { selectedTab = 3 })
+                0 -> HomeScreen(onNavigateToExame = { selectedTab = 1 })
                 1 -> ExameScreen(viewModel, onFinish = { selectedTab = 2 })
                 2 -> ListaScreen(viewModel, onClear = { selectedTab = 0 })
                 3 -> SobreScreen(viewModel, onClear = { selectedTab = 0 })
