@@ -19,6 +19,12 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
     private val _customItems = MutableStateFlow<List<ExamEntry.Custom>>(emptyList())
     val customItems: StateFlow<List<ExamEntry.Custom>> = _customItems.asStateFlow()
 
+    private val _lastConfessionDate = MutableStateFlow<Long?>(null)
+    val lastConfessionDate: StateFlow<Long?> = _lastConfessionDate.asStateFlow()
+
+    private val _userCondition = MutableStateFlow<String?>(null)
+    val userCondition: StateFlow<String?> = _userCondition.asStateFlow()
+
     init {
         viewModelScope.launch {
             repository.selectedIds.collect { ids ->
@@ -34,6 +40,16 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
                         _customItems.value = emptyList()
                     }
                 }
+            }
+        }
+        viewModelScope.launch {
+            repository.lastConfessionDate.collect { date ->
+                _lastConfessionDate.value = date
+            }
+        }
+        viewModelScope.launch {
+            repository.userCondition.collect { condition ->
+                _userCondition.value = condition
             }
         }
     }
@@ -73,6 +89,20 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
             val updated = _customItems.value.filter { it.id != id }
             _customItems.value = updated
             repository.updateCustomItemsJson(Json.encodeToString(updated))
+        }
+    }
+
+    fun updateLastConfessionDate(dateMillis: Long) {
+        viewModelScope.launch {
+            _lastConfessionDate.value = dateMillis
+            repository.updateLastConfessionDate(dateMillis)
+        }
+    }
+
+    fun updateUserCondition(condition: String) {
+        viewModelScope.launch {
+            _userCondition.value = condition
+            repository.updateUserCondition(condition)
         }
     }
 

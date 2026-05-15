@@ -1,7 +1,6 @@
 package com.arautos.confessioae
 
 import android.os.Bundle
-import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -12,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.arautos.confessioae.security.SecurityManager
 import com.arautos.confessioae.ui.screens.MainScreen
 import com.arautos.confessioae.ui.theme.ConfessioAETheme
 
@@ -19,10 +19,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        window.setFlags(
-            WindowManager.LayoutParams.FLAG_SECURE,
-            WindowManager.LayoutParams.FLAG_SECURE,
-        )
+        SecurityManager.applySecurityPolicies(this)
         
         enableEdgeToEdge()
         hideSystemBars()

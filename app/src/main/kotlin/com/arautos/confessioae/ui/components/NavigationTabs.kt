@@ -4,12 +4,11 @@ import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun NavigationTabs(selectedTab: Int, onTabSelected: (Int) -> Unit) {
-    val tabs = listOf("Início", "Exame", "Lista", "Sobre")
+    val tabs = listOf("Início", "Exame", "Roteiro", "Sobre")
 
     TabRow(
         selectedTabIndex = selectedTab,
@@ -33,6 +32,8 @@ fun NavigationTabs(selectedTab: Int, onTabSelected: (Int) -> Unit) {
                     Text(
                         text = title,
                         style = MaterialTheme.typography.labelLarge,
+                        maxLines = 1,
+                        softWrap = false,
                         color = if (selectedTab == index)
                             MaterialTheme.colorScheme.primary
                         else

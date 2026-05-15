@@ -50,7 +50,7 @@ export const EXAMINATION_ITEMS: ExaminationItem[] = [
   { id: 'p6', category: 'proximo', text: 'Se falei ou pensei mal de alguém.' },
   { id: 'p7', category: 'proximo', text: 'Se disse palavras injuriosas ou baixas.' },
   { id: 'p8', category: 'proximo', text: 'Se falei mentiras, leves ou graves, e se prejudiquei ao próximo com elas.' },
-  { id: 'p9', category: 'proximo', text: 'Se cometi defeitos ou faltas de meu próximo sem necessidade.' },
+  { id: 'p9', category: 'proximo', text: 'Se comentei defeitos ou faltas de meu próximo sem necessidade.' },
   { id: 'p10', category: 'proximo', text: 'Se fiz intrigas ou caluniei alguém em coisas graves.' },
   { id: 'p11', category: 'proximo', text: 'Se irritei-me ou roguei pragas a alguém, e se recusei reconciliar-me, guardando rancor.' },
   { id: 'p12', category: 'proximo', text: 'Se desejei ou cometi vinganças.' },
