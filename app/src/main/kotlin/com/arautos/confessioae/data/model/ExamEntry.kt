@@ -22,6 +22,6 @@ sealed class ExamEntry {
     @Serializable
     object PermanentAdd : ExamEntry() {
         override val id: String = "permanent_add_item"
-        override val text: String = "+ pecado não relacionado ou uma dúvida"
+        override val text: String = "pecado não relacionado ou uma dúvida"
     }
 }

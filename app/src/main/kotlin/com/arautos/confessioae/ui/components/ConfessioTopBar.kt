@@ -17,12 +17,12 @@ fun ConfessioTopBar() {
         title = {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(top = 20.dp)
+                modifier = Modifier.padding(top = 20.dp),
             ) {
                 Text(
                     "C O N F E S S I O",
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Light
+                    fontWeight = FontWeight.Light,
                 )
                 Text(
                     "ARAUTOS DO EVANGELHO",

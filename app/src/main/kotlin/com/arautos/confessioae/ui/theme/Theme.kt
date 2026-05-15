@@ -26,6 +26,6 @@ fun ConfessioAETheme(
     MaterialTheme(
         colorScheme = LightColorScheme,
         typography = Typography,
-        content = content
+        content = content,
     )
 }

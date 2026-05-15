@@ -25,6 +25,9 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
     private val _userCondition = MutableStateFlow<String?>(null)
     val userCondition: StateFlow<String?> = _userCondition.asStateFlow()
 
+    private val _confessedIds = MutableStateFlow<Set<String>>(emptySet())
+    val confessedIds: StateFlow<Set<String>> = _confessedIds.asStateFlow()
+
     init {
         viewModelScope.launch {
             repository.selectedIds.collect { ids ->
@@ -106,6 +109,11 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    fun toggleConfessed(id: String) {
+        val current = _confessedIds.value
+        _confessedIds.value = if (current.contains(id)) current - id else current + id
+    }
+
     // Combine standard and custom items for the list screen
     fun getAllListEntries(): Flow<List<ExamEntry>> {
         return combine(selectedIds, customItems) { ids, customs ->
@@ -122,6 +130,7 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
         viewModelScope.launch {
             _selectedIds.value = emptySet()
             _customItems.value = emptyList()
+            _confessedIds.value = emptySet()
             repository.clearAll()
         }
     }

@@ -10,13 +10,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -29,6 +28,7 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.arautos.confessioae.data.model.Category
@@ -38,9 +38,7 @@ import com.arautos.confessioae.data.repository.ExaminationDataProvider
 import com.arautos.confessioae.ui.components.ConfessioButton
 import com.arautos.confessioae.ui.components.ExameCategoryBar
 import com.arautos.confessioae.ui.viewmodel.ExaminationViewModel
-import java.text.SimpleDateFormat
 import java.util.*
-import kotlinx.coroutines.delay
 
 /**
  * Tela Inicial: Boas-vindas e orientações sobre o sacramento.
@@ -169,7 +167,7 @@ fun ExameScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit) {
             }
         )
 
-        // Parte 3: Conteúdo (Descrição, Itens e Botão de Navegação)
+        // Parte 2: Conteúdo (Descrição, Itens e Botão de Navegação)
         LazyColumn(
             modifier = Modifier.weight(1f).padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -242,13 +240,16 @@ fun ExaminationItemRow(item: ExaminationItem, isSelected: Boolean, onToggle: () 
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onClear: () -> Unit, onFinish: () -> Unit) {
+fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit) {
     val entries by viewModel.getAllListEntries().collectAsState(initial = emptyList())
     val lastDate by viewModel.lastConfessionDate.collectAsState()
     val userCondition by viewModel.userCondition.collectAsState()
+    val confessedIds by viewModel.confessedIds.collectAsState()
     
     var showAcolhimento by remember { mutableStateOf(false) }
-    var penitenciaCumprida by rememberSaveable { mutableStateOf(false) }
+
+    var showCustomDialog by remember { mutableStateOf(false) }
+    var editingItem by remember { mutableStateOf<ExamEntry.Custom?>(null) }
 
     val scrollState = rememberScrollState()
 
@@ -259,14 +260,6 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onClear: () -> Unit,
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-       /* Text(
-            "ROTEIRO",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFFA97F1A),
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center
-        )*/
 
         // 1. BLOCO “PREPARAÇÃO”
         ConfessionSectionTitle("Preparação")
@@ -276,7 +269,7 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onClear: () -> Unit,
             "Em nome do Pai, do Filho e do Espírito Santo. Amém.",
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
+            textAlign = TextAlign.Left,
             modifier = Modifier.fillMaxWidth()
         )
         // 1.2 Sinal da Cruz
@@ -294,7 +287,7 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onClear: () -> Unit,
             onDateSelected = { viewModel.updateLastConfessionDate(it) }
         )
 
-        // 1.4 Minha condição
+        // 1.4 Condição
         ConditionItem(
             condition = userCondition,
             onConditionSelected = { viewModel.updateUserCondition(it) }
@@ -303,7 +296,7 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onClear: () -> Unit,
         // 2. BLOCO “CONFISSÃO DOS PECADOS”
         ConfessionSectionTitle("Confissão dos Pecados")
 
-        if (entries.none { it is ExamEntry.Standard || it is ExamEntry.Custom }) {
+        if (entries.isEmpty()) {
             Text(
                 "Nenhum pecado selecionado no exame.",
                 style = MaterialTheme.typography.bodyMedium,
@@ -311,54 +304,128 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onClear: () -> Unit,
                 color = Color.Gray
             )
         } else {
-            entries.filter { it is ExamEntry.Standard || it is ExamEntry.Custom }.forEach { entry ->
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    border = BorderStroke(1.dp, Color(0xFFDBD9D2))
-                ) {
-                    Text(
-                        text = entry.text,
-                        modifier = Modifier.padding(16.dp),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
+            entries.forEach { entry ->
+                when (entry) {
+                    is ExamEntry.Standard -> {
+                        val isConfessed = confessedIds.contains(entry.id)
+                        Card(
+                            onClick = { viewModel.toggleConfessed(entry.id) },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                            border = BorderStroke(1.dp, Color(0xFFDBD9D2))
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Checkbox(
+                                    checked = isConfessed,
+                                    onCheckedChange = { viewModel.toggleConfessed(entry.id) }
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text(
+                                    text = entry.text,
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                        }
+                    }
+                    is ExamEntry.Custom -> {
+                        val isConfessed = confessedIds.contains(entry.id)
+                        Card(
+                            onClick = { viewModel.toggleConfessed(entry.id) },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                            border = BorderStroke(1.dp, Color(0xFFDBD9D2))
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Checkbox(
+                                    checked = isConfessed,
+                                    onCheckedChange = { viewModel.toggleConfessed(entry.id) }
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text(
+                                    text = entry.text,
+                                    modifier = Modifier.weight(1f),
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                                IconButton(onClick = { 
+                                    editingItem = entry
+                                    showCustomDialog = true
+                                }) {
+                                    Icon(Icons.Default.Edit, contentDescription = "Editar", tint = MaterialTheme.colorScheme.primary)
+                                }
+                                IconButton(onClick = { viewModel.deleteCustomItem(entry.id) }) {
+                                    Icon(Icons.Default.Delete, contentDescription = "Remover", tint = MaterialTheme.colorScheme.error)
+                                }
+                            }
+                        }
+                    }
+                    is ExamEntry.PermanentAdd -> {
+                        Card(
+                            onClick = {
+                                editingItem = null
+                                showCustomDialog = true
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                            border = BorderStroke(1.dp, Color(0xFFDBD9D2).copy(alpha = 0.5f))
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(Icons.Default.Add, contentDescription = null, tint = Color(0xFFA97F1A))
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = entry.text,
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontStyle = FontStyle.Italic,
+                                        color = Color(0xFFA97F1A)
+                                    )
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
 
-        // 5. TEXTO FINAL DOS PECADOS
+        // 3. TEXTO FINAL DOS PECADOS
         Text(
-            "Estes são os meus pecados.",
+            "... e estes são os meus pecados.",
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
 
-        // 6. ATO DE CONTRIÇÃO
+        // 4. ATO DE CONTRIÇÃO
         ConfessionSectionTitle("Ato de Contrição")
         ExpandableTextItem(
             title = "Ato de contrição",
-            buttonText = "Mostrar oração",
+            /*buttonText = "Mostrar oração",*/
             content = "Meu Deus, eu me arrependo de todo o coração de Vos ter ofendido, porque sois tão bom e amável. Prometo, com a vossa graça, não tornar a pecar e evitar as ocasiões de pecado. Amém."
         )
 
-        // 7. ABSOLVIÇÃO (PADRE)
-        ConfessionSectionTitle("Absolvição")
-        ExpandableTextItem(
-            title = "Absolvição",
-            buttonText = "Mostrar fórmula",
-            content = "Deus, Pai de misericórdia, que pela morte e ressurreição de seu Filho reconciliou o mundo consigo e enviou o Espírito Santo para remissão dos pecados, te conceda, pelo ministério da Igreja, o perdão e a paz. E eu te absolvo dos teus pecados, em nome do Pai, do Filho e do Espírito Santo."
+        // 5. ABSOLVIÇÃO (PADRE)
+        ConfessionSectionTitle("Absolvição (oração feita pelo padre)")
+
+        // 6. SINAL DA CRUZ FINAL
+        Text(
+            "Em nome do Pai, do Filho e do Espírito Santo. Amém.",
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Left,
+            modifier = Modifier.fillMaxWidth()
         )
 
-        // 8. SINAL DA CRUZ FINAL
-        ExpandableTextItem(
-            title = "Sinal da Cruz",
-            content = "Em nome do Pai, do Filho e do Espírito Santo. Amém.",
-            icon = Icons.Default.Check
-        )
-
-        // 9. PENITÊNCIA
+        // 7. PENITÊNCIA
+        /*
         ConfessionSectionTitle("Penitência")
         Row(
             modifier = Modifier
@@ -371,9 +438,9 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onClear: () -> Unit,
             Text("Penitência cumprida", style = MaterialTheme.typography.bodyLarge)
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(24.dp))*/
 
-        // 10. BOTÃO FINAL
+        // 8. RECEBI A ABSOLVIÇÃO
         Button(
             onClick = {
                 viewModel.updateLastConfessionDate(System.currentTimeMillis())
@@ -387,23 +454,43 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onClear: () -> Unit,
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-        
+
+        // 9. BOTÃO FINAL
+        /*
         TextButton(
             onClick = onClear,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) {
             Text("Limpar exame e recomeçar", color = MaterialTheme.colorScheme.error)
         }
-        
+        */
         Spacer(modifier = Modifier.height(32.dp))
     }
 
     if (showAcolhimento) {
         AcolhimentoEspiritualScreen(onDismiss = {
-            showAcolhimento = false
             viewModel.clearAllData()
             onFinish()
         })
+    }
+
+    if (showCustomDialog) {
+        CustomItemDialog(
+            initialText = editingItem?.text ?: "",
+            onDismiss = {
+                showCustomDialog = false
+                editingItem = null
+            },
+            onSave = { text ->
+                if (editingItem != null) {
+                    viewModel.updateCustomItem(editingItem!!.id, text)
+                } else {
+                    viewModel.addCustomItem(text)
+                }
+                showCustomDialog = false
+                editingItem = null
+            }
+        )
     }
 }
 
@@ -429,7 +516,7 @@ fun ExpandableTextItem(
     
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         border = BorderStroke(1.dp, Color(0xFFDBD9D2))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -498,7 +585,6 @@ fun LastConfessionItem(lastDate: Long?, onDateSelected: (Long) -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                /*Text("Tempo desde a última Confissão", style = MaterialTheme.typography.labelMedium, color = Color.Gray)*/
                 Text(dateText, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
             }
             Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
@@ -512,10 +598,10 @@ fun LastConfessionItem(lastDate: Long?, onDateSelected: (Long) -> Unit) {
                 TextButton(onClick = {
                     datePickerState.selectedDateMillis?.let { onDateSelected(it) }
                     showDatePicker = false
-                }) { Text("Confirmar") }
+                }) { Text("Confirmar", fontSize = MaterialTheme.typography.labelMedium.fontSize * 2 ) }
             },
             dismissButton = {
-                TextButton(onClick = { showDatePicker = false }) { Text("Cancelar") }
+                TextButton(onClick = { showDatePicker = false }) { Text("Cancelar", fontSize = MaterialTheme.typography.labelMedium.fontSize * 2 ) }
             },
             modifier = Modifier.scale(0.7f)
         ) {
@@ -562,8 +648,8 @@ fun ConditionItem(condition: String?, onConditionSelected: (String) -> Unit) {
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            modifier = Modifier.scale(0.7f),
-            title = { Text("Selecione sua condição") },
+            modifier = Modifier.scale(0.9f),
+            title = { Text("Selecione sua condição", fontSize = 26.sp) },
             text = {
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                     options.forEach { option ->
@@ -580,7 +666,7 @@ fun ConditionItem(condition: String?, onConditionSelected: (String) -> Unit) {
                         ) {
                             RadioButton(selected = !isCustom && condition == option, onClick = null)
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(option)
+                            Text(option, fontSize = 18.sp)
                         }
                     }
 
@@ -594,7 +680,7 @@ fun ConditionItem(condition: String?, onConditionSelected: (String) -> Unit) {
                     ) {
                         RadioButton(selected = isCustom, onClick = null)
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Outra…")
+                        Text("Outra…", fontSize = 18.sp)
                     }
 
                     if (isCustom) {
@@ -615,12 +701,12 @@ fun ConditionItem(condition: String?, onConditionSelected: (String) -> Unit) {
                     }
                     showDialog = false
                 }) {
-                    Text(if (isCustom) "Confirmar" else "Fechar")
+                    Text(if (isCustom) "Confirmar" else "Fechar", fontSize = 18.sp)
                 }
             },
             dismissButton = {
                 if (isCustom) {
-                    TextButton(onClick = { showDialog = false }) { Text("Cancelar") }
+                    TextButton(onClick = { showDialog = false }) { Text("Cancelar", fontSize = 18.sp) }
                 }
             }
         )
@@ -633,7 +719,7 @@ fun calculateTimeSinceLastConfession(lastDateMillis: Long?): String {
     val now = Calendar.getInstance()
     val last = Calendar.getInstance().apply { timeInMillis = lastDateMillis }
     
-    // Zerar horas para comparação de dias
+    // Inicializar horas para comparação de dias
     now.set(Calendar.HOUR_OF_DAY, 0); now.set(Calendar.MINUTE, 0); now.set(Calendar.SECOND, 0); now.set(Calendar.MILLISECOND, 0)
     last.set(Calendar.HOUR_OF_DAY, 0); last.set(Calendar.MINUTE, 0); last.set(Calendar.SECOND, 0); last.set(Calendar.MILLISECOND, 0)
     
@@ -648,15 +734,17 @@ fun calculateTimeSinceLastConfession(lastDateMillis: Long?): String {
         }
         diffDays < 730 -> {
             val months = diffDays / 30
-            "Faz $months ${if (months == 1) "mês" else "meses"} que não Confesso."
+            "Faz $months meses que não Confesso."
         }
         else -> {
             val years = diffDays / 365
-            "Faz $years ${if (years == 1) "ano" else "anos"} que não Confesso."
+            "Faz $years anos que não Confesso."
         }
     }
 }
-
+/**
+ * Tela de Absolvição.
+ */
 @Composable
 fun AcolhimentoEspiritualScreen(onDismiss: () -> Unit) {
     Dialog(
@@ -667,7 +755,7 @@ fun AcolhimentoEspiritualScreen(onDismiss: () -> Unit) {
             modifier = Modifier.fillMaxSize(),
             color = Color(0xFF1A1A1A)
         ) {
-            var startAnimation by remember { mutableStateOf(false) }
+            var startAnimation by remember { mutableStateOf(value = false) }
             LaunchedEffect(Unit) {
                 startAnimation = true
             }
@@ -679,16 +767,16 @@ fun AcolhimentoEspiritualScreen(onDismiss: () -> Unit) {
             )
 
             Box(modifier = Modifier.fillMaxSize()) {
-                // Imagem de fundo (Usando icone_570 como placeholder já que a imagem específica não foi encontrada)
                 Image(
-                    painter = painterResource(id = com.arautos.confessioae.R.drawable.icone_570),
+                    painter = painterResource(id = com.arautos.confessioae.R.drawable.deus_te_acolhe_com_amor2),
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxSize()
-                        .alpha(alpha * 0.4f),
+                        .scale(0.9f),
+                        //.alpha(alpha * 0.8f),
                     contentScale = ContentScale.Fit
                 )
-                
+
                 // Overlay gradiente dourado suave
                 Box(
                     modifier = Modifier
@@ -709,27 +797,28 @@ fun AcolhimentoEspiritualScreen(onDismiss: () -> Unit) {
                         .fillMaxSize()
                         .padding(24.dp)
                         .alpha(alpha),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    //Spacer(modifier = Modifier.height(10.dp))
+
                     Text(
                         "Deus te acolhe com amor.",
                         style = MaterialTheme.typography.headlineMedium,
                         color = Color(0xFFD4AF37),
                         textAlign = TextAlign.Center
                     )
-                    
-                    Spacer(modifier = Modifier.height(24.dp))
-                    
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
                     Text(
                         "Seu Roteiro foi concluído.\nA misericórdia do Senhor renovou seu coração.",
                         style = MaterialTheme.typography.bodyLarge,
                         color = Color.White,
                         textAlign = TextAlign.Center
                     )
-                    
-                    Spacer(modifier = Modifier.height(48.dp))
-                    
+
+                    Spacer(modifier = Modifier.weight(1f))
+
                     Text(
                         "Vá em paz e cumpra sua penitência.\nO Senhor caminha com você.",
                         style = MaterialTheme.typography.bodyMedium,
@@ -737,8 +826,8 @@ fun AcolhimentoEspiritualScreen(onDismiss: () -> Unit) {
                         textAlign = TextAlign.Center,
                         fontStyle = FontStyle.Italic
                     )
-                    
-                    Spacer(modifier = Modifier.height(64.dp))
+
+                    Spacer(modifier = Modifier.height(20.dp))
                     
                     Button(
                         onClick = onDismiss,
@@ -757,7 +846,44 @@ fun AcolhimentoEspiritualScreen(onDismiss: () -> Unit) {
  * Tela de Sobre: Informações institucionais e configurações de privacidade.
  */
 @Composable
-fun SobreScreen(viewModel: ExaminationViewModel, onClear: () -> Unit) {
+fun CustomItemDialog(
+    initialText: String,
+    onDismiss: () -> Unit,
+    onSave: (String) -> Unit
+) {
+    var text by remember { mutableStateOf(initialText) }
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        modifier = Modifier.scale(0.9f),
+        title = { Text(if (initialText.isEmpty()) "Adicionar Pecado ou Dúvida" else "Editar Pecado ou Dúvida", fontSize = 26.sp) },
+        text = {
+            OutlinedTextField(
+                value = text,
+                onValueChange = { text = it },
+                modifier = Modifier.fillMaxWidth().height(150.dp),
+                placeholder = { Text("Descreva aqui seu pecado ou dúvida…", fontSize = 20.sp) },
+                minLines = 3
+            )
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { if (text.isNotBlank()) onSave(text) },
+                enabled = text.isNotBlank()
+            ) {
+                Text("Salvar", fontSize = 20.sp)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar", fontSize = 20.sp)
+            }
+        }
+    )
+}
+
+@Composable
+fun SobreScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()

@@ -43,13 +43,13 @@ fun ConfessioButton(
         contentPadding = PaddingValues(0.dp), // Remove padding interno para garantir altura exata de 48.dp
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
-            contentColor = contentColor
+            contentColor = contentColor,
         ),
         elevation = ButtonDefaults.buttonElevation(
             defaultElevation = 0.dp,
             pressedElevation = 0.dp,
             hoveredElevation = 0.dp,
-            focusedElevation = 0.dp
+            focusedElevation = 0.dp,
         )
     ) {
         Text(

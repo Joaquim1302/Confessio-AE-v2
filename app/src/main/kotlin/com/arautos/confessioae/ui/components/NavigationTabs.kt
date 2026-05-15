@@ -4,7 +4,6 @@ import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 
 @Composable
 fun NavigationTabs(selectedTab: Int, onTabSelected: (Int) -> Unit) {
@@ -18,11 +17,11 @@ fun NavigationTabs(selectedTab: Int, onTabSelected: (Int) -> Unit) {
             if (selectedTab < tabPositions.size) {
                 TabRowDefaults.SecondaryIndicator(
                     modifier = Modifier.tabIndicatorOffset(tabPositions[selectedTab]),
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
         },
-        divider = {}
+        divider = {},
     ) {
         tabs.forEachIndexed { index, title ->
             Tab(
@@ -37,9 +36,9 @@ fun NavigationTabs(selectedTab: Int, onTabSelected: (Int) -> Unit) {
                         color = if (selectedTab == index)
                             MaterialTheme.colorScheme.primary
                         else
-                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     )
-                }
+                },
             )
         }
     }
