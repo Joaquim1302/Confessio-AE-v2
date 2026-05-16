@@ -44,7 +44,7 @@ fun MainScreen() {
         ) {
             when (selectedTab) {
                 0 -> HomeScreen()
-                1 -> ExameScreen(viewModel) { selectedTab = 2 }
+                1 -> ExameScreen(viewModel)
                 2 -> GuidedConfessionScreen(viewModel) { selectedTab = 0 }
                 3 -> SobreScreen()
             }

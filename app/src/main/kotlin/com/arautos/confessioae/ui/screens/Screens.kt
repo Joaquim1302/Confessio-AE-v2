@@ -35,7 +35,6 @@ import com.arautos.confessioae.data.model.Category
 import com.arautos.confessioae.data.model.ExamEntry
 import com.arautos.confessioae.data.model.ExaminationItem
 import com.arautos.confessioae.data.repository.ExaminationDataProvider
-import com.arautos.confessioae.ui.components.ConfessioButton
 import com.arautos.confessioae.ui.components.ExameCategoryBar
 import com.arautos.confessioae.ui.viewmodel.ExaminationViewModel
 import java.util.*
@@ -151,7 +150,7 @@ fun HomeScreen() {
  * Tela de Exame: Fluxo guiado para o exame de consciência por categorias.
  */
 @Composable
-fun ExameScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit) {
+fun ExameScreen(viewModel: ExaminationViewModel) {
     val categories = Category.entries
     var currentStep by remember { mutableIntStateOf(0) }
     val category = categories[currentStep]
@@ -188,7 +187,8 @@ fun ExameScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit) {
                     onToggle = { viewModel.toggleItem(item.id) }
                 )
             }
-            item {
+
+            item {/*
                 Spacer(modifier = Modifier.height(24.dp))
                 ConfessioButton(
                     text = if (currentStep < categories.size - 1) "Próximo" else "Ir para Roteiro",
@@ -196,9 +196,10 @@ fun ExameScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit) {
                         if (currentStep < categories.size - 1) currentStep++
                         else onFinish()
                     }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+                )*/
+                Spacer(modifier = Modifier.height(10.dp))
             }
+
         }
     }
 }
@@ -264,15 +265,29 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
         // 1. BLOCO “PREPARAÇÃO”
         ConfessionSectionTitle("Preparação")
 
-        // 1.1 Sinal da Cruz
+        // 1.1 Tempo desde a última confissão
+        LastConfessionItem(
+            lastDate = lastDate,
+            onDateSelected = { viewModel.updateLastConfessionDate(it) }
+        )
+
+        // 1.2 Condição
+        ConditionItem(
+            condition = userCondition,
+            onConditionSelected = { viewModel.updateUserCondition(it) }
+        )
+
+        // 2. BLOCO “Início”
+        ConfessionSectionTitle("Início")
+
         Text(
-            "Em nome do Pai, do Filho e do Espírito Santo. Amém.",
+            "Em nome do Pai, do Filho\ne do Espírito Santo.\nAmém.",
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Left,
+            textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
-        // 1.2 Sinal da Cruz
+
         Text(
             "Padre, eu pequei.",
             style = MaterialTheme.typography.bodyLarge,
@@ -281,17 +296,23 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
             modifier = Modifier.fillMaxWidth()
         )
 
-        // 1.3 Tempo desde a última confissão
-        LastConfessionItem(
-            lastDate = lastDate,
-            onDateSelected = { viewModel.updateLastConfessionDate(it) }
+        Text(
+            "Sou minha condição",
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Left,
+            modifier = Modifier.fillMaxWidth()
         )
+        //Spacer(modifier = Modifier.width(12.dp))
+        Text(
+            "Não me confesso a n dias.",
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Left,
+            modifier = Modifier.fillMaxWidth()
+        )
+        //Spacer(modifier = Modifier.width(12.dp))
 
-        // 1.4 Condição
-        ConditionItem(
-            condition = userCondition,
-            onConditionSelected = { viewModel.updateUserCondition(it) }
-        )
 
         // 2. BLOCO “CONFISSÃO DOS PECADOS”
         ConfessionSectionTitle("Confissão dos Pecados")
@@ -417,10 +438,10 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
 
         // 6. SINAL DA CRUZ FINAL
         Text(
-            "Em nome do Pai, do Filho e do Espírito Santo. Amém.",
+            "Em nome do Pai, do Filho\ne do Espírito Santo.\nAmém.",
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Left,
+            textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -743,7 +764,7 @@ fun calculateTimeSinceLastConfession(lastDateMillis: Long?): String {
     }
 }
 /**
- * Tela de Absolvição.
+ * Tela de Absolvição
  */
 @Composable
 fun AcolhimentoEspiritualScreen(onDismiss: () -> Unit) {
