@@ -14,8 +14,6 @@ class ConfessioRepository(private val context: Context) {
     private object PreferencesKeys {
         val SELECTED_IDS = stringSetPreferencesKey("selected_ids")
         val CUSTOM_ITEMS = stringPreferencesKey("custom_items")
-        val LAST_CONFESSION_DATE = longPreferencesKey("last_confession_date")
-        val USER_CONDITION = stringPreferencesKey("user_condition")
     }
 
     val selectedIds: Flow<Set<String>> = context.dataStore.data
@@ -28,16 +26,6 @@ class ConfessioRepository(private val context: Context) {
             preferences[PreferencesKeys.CUSTOM_ITEMS]
         }
 
-    val lastConfessionDate: Flow<Long?> = context.dataStore.data
-        .map { preferences ->
-            preferences[PreferencesKeys.LAST_CONFESSION_DATE]
-        }
-
-    val userCondition: Flow<String?> = context.dataStore.data
-        .map { preferences ->
-            preferences[PreferencesKeys.USER_CONDITION]
-        }
-
     suspend fun updateSelectedIds(ids: Set<String>) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.SELECTED_IDS] = ids
@@ -47,18 +35,6 @@ class ConfessioRepository(private val context: Context) {
     suspend fun updateCustomItemsJson(json: String) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.CUSTOM_ITEMS] = json
-        }
-    }
-
-    suspend fun updateLastConfessionDate(dateMillis: Long) {
-        context.dataStore.edit { preferences ->
-            preferences[PreferencesKeys.LAST_CONFESSION_DATE] = dateMillis
-        }
-    }
-
-    suspend fun updateUserCondition(condition: String) {
-        context.dataStore.edit { preferences ->
-            preferences[PreferencesKeys.USER_CONDITION] = condition
         }
     }
 

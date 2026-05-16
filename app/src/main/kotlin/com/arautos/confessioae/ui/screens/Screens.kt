@@ -37,6 +37,7 @@ import com.arautos.confessioae.data.model.ExaminationItem
 import com.arautos.confessioae.data.repository.ExaminationDataProvider
 import com.arautos.confessioae.ui.components.ExameCategoryBar
 import com.arautos.confessioae.ui.viewmodel.ExaminationViewModel
+import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -247,7 +248,7 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
     val userCondition by viewModel.userCondition.collectAsState()
     val confessedIds by viewModel.confessedIds.collectAsState()
     
-    var showAcolhimento by remember { mutableStateOf(false) }
+    var showAcolhimento by remember { mutableStateOf(value = false) }
 
     var showCustomDialog by remember { mutableStateOf(false) }
     var editingItem by remember { mutableStateOf<ExamEntry.Custom?>(null) }
@@ -263,7 +264,7 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
     ) {
 
         // 1. BLOCO “PREPARAÇÃO”
-        ConfessionSectionTitle("Preparação")
+        ConfessionSectionTitle("ANTES DE CONFESSAR")
 
         // 1.1 Tempo desde a última confissão
         LastConfessionItem(
@@ -285,6 +286,7 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
+            fontStyle = FontStyle.Italic,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -293,26 +295,31 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Left,
+            fontStyle = FontStyle.Italic,
             modifier = Modifier.fillMaxWidth()
         )
 
-        Text(
-            "Sou minha condição",
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Left,
-            modifier = Modifier.fillMaxWidth()
-        )
-        //Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            "Não me confesso a n dias.",
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Left,
-            modifier = Modifier.fillMaxWidth()
-        )
-        //Spacer(modifier = Modifier.width(12.dp))
+        if (lastDate != null) {
+            Text(
+                "Faz ${calculateTimeSinceLastConfession(lastDate)} que não confesso",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Left,
+                fontStyle = FontStyle.Italic,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
+        if (!userCondition.isNullOrBlank()) {
+            Text(
+                "Sou $userCondition",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Left,
+                fontStyle = FontStyle.Italic,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
         // 2. BLOCO “CONFISSÃO DOS PECADOS”
         ConfessionSectionTitle("Confissão dos Pecados")
@@ -332,21 +339,23 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
                         Card(
                             onClick = { viewModel.toggleConfessed(entry.id) },
                             modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                            border = BorderStroke(1.dp, Color(0xFFDBD9D2))
+                            colors = CardDefaults.cardColors(containerColor = Color.Transparent)
                         ) {
                             Row(
-                                modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                                modifier = Modifier.padding(6.dp).fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Checkbox(
                                     checked = isConfessed,
                                     onCheckedChange = { viewModel.toggleConfessed(entry.id) }
                                 )
-                                Spacer(modifier = Modifier.width(12.dp))
+                                Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = entry.text,
-                                    style = MaterialTheme.typography.bodyLarge
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontStyle = FontStyle.Italic,
+                                        fontWeight = FontWeight.Bold
+                                    )
                                 )
                             }
                         }
@@ -356,22 +365,24 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
                         Card(
                             onClick = { viewModel.toggleConfessed(entry.id) },
                             modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                            border = BorderStroke(1.dp, Color(0xFFDBD9D2))
+                            colors = CardDefaults.cardColors(containerColor = Color.Transparent)
                         ) {
                             Row(
-                                modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                                modifier = Modifier.padding(6.dp).fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Checkbox(
                                     checked = isConfessed,
                                     onCheckedChange = { viewModel.toggleConfessed(entry.id) }
                                 )
-                                Spacer(modifier = Modifier.width(12.dp))
+                                Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = entry.text,
                                     modifier = Modifier.weight(1f),
-                                    style = MaterialTheme.typography.bodyLarge
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontStyle = FontStyle.Italic,
+                                        fontWeight = FontWeight.Bold
+                                    )
                                 )
                                 IconButton(onClick = { 
                                     editingItem = entry
@@ -393,20 +404,21 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
                             },
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-                            border = BorderStroke(1.dp, Color(0xFFDBD9D2).copy(alpha = 0.5f))
+                            border = BorderStroke(1.dp, Color(0xFFDBD9D2))
                         ) {
                             Row(
                                 modifier = Modifier.padding(16.dp).fillMaxWidth(),
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(Icons.Default.Add, contentDescription = null, tint = Color(0xFFA97F1A))
+                                Icon(Icons.Default.Add, contentDescription = null, tint = Color(0xFF000000))
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = entry.text,
                                     style = MaterialTheme.typography.bodyLarge.copy(
-                                        fontStyle = FontStyle.Italic,
-                                        color = Color(0xFFA97F1A)
+                                        fontStyle = FontStyle.Normal,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color(0xFF000000)
                                     )
                                 )
                             }
@@ -422,6 +434,7 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
+            fontStyle = FontStyle.Italic,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -442,6 +455,7 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
+            fontStyle = FontStyle.Italic,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -593,8 +607,6 @@ fun LastConfessionItem(lastDate: Long?, onDateSelected: (Long) -> Unit) {
     var showDatePicker by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
     
-    val dateText = calculateTimeSinceLastConfession(lastDate)
-
     Card(
         onClick = { showDatePicker = true },
         modifier = Modifier.fillMaxWidth(),
@@ -606,7 +618,17 @@ fun LastConfessionItem(lastDate: Long?, onDateSelected: (Long) -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(dateText, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
+                Text("Última confissão:", style = MaterialTheme.typography.labelMedium)
+                val dateDisplay = if (lastDate != null) {
+                    SimpleDateFormat("dd/MMM/yyyy", Locale.getDefault()).format(Date(lastDate))
+                } else {
+                    "Toque para selecionar a data"
+                }
+                Text(
+                    text = dateDisplay,
+                    style = MaterialTheme.typography.bodyLarge, 
+                    fontWeight = FontWeight.Bold
+                )
             }
             Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
         }
@@ -735,7 +757,7 @@ fun ConditionItem(condition: String?, onConditionSelected: (String) -> Unit) {
 }
 
 fun calculateTimeSinceLastConfession(lastDateMillis: Long?): String {
-    if (lastDateMillis == null) return "Faz n dias que não Confesso."
+    if (lastDateMillis == null) return "n dias"
     
     val now = Calendar.getInstance()
     val last = Calendar.getInstance().apply { timeInMillis = lastDateMillis }
@@ -748,18 +770,18 @@ fun calculateTimeSinceLastConfession(lastDateMillis: Long?): String {
     val diffDays = (diffMillis / (1000 * 60 * 60 * 24)).toInt()
 
     return when {
-        diffDays < 7 -> "Faz $diffDays ${if (diffDays == 1) "dia" else "dias"} que não Confesso."
+        diffDays < 7 -> "$diffDays ${if (diffDays == 1) "dia" else "dias"}"
         diffDays < 60 -> {
             val weeks = diffDays / 7
-            "Faz $weeks ${if (weeks == 1) "semana" else "semanas"} que não Confesso."
+            "$weeks ${if (weeks == 1) "semana" else "semanas"}"
         }
         diffDays < 730 -> {
             val months = diffDays / 30
-            "Faz $months meses que não Confesso."
+            "$months meses"
         }
         else -> {
             val years = diffDays / 365
-            "Faz $years anos que não Confesso."
+            "$years anos"
         }
     }
 }

@@ -6,12 +6,14 @@ import androidx.lifecycle.viewModelScope
 import com.arautos.confessioae.data.model.ExamEntry
 import com.arautos.confessioae.data.repository.ConfessioRepository
 import com.arautos.confessioae.data.repository.ExaminationDataProvider
+import com.arautos.confessioae.data.repository.UserPreferences
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
 class ExaminationViewModel(application: Application) : AndroidViewModel(application) {
     private val repository = ConfessioRepository(application)
+    private val userPrefs = UserPreferences(application)
 
     private val _selectedIds = MutableStateFlow<Set<String>>(emptySet())
     val selectedIds: StateFlow<Set<String>> = _selectedIds.asStateFlow()
@@ -46,12 +48,12 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
             }
         }
         viewModelScope.launch {
-            repository.lastConfessionDate.collect { date ->
+            userPrefs.getLastConfession.collect { date ->
                 _lastConfessionDate.value = date
             }
         }
         viewModelScope.launch {
-            repository.userCondition.collect { condition ->
+            userPrefs.getCondition.collect { condition ->
                 _userCondition.value = condition
             }
         }
@@ -98,14 +100,14 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
     fun updateLastConfessionDate(dateMillis: Long) {
         viewModelScope.launch {
             _lastConfessionDate.value = dateMillis
-            repository.updateLastConfessionDate(dateMillis)
+            userPrefs.saveLastConfession(dateMillis)
         }
     }
 
     fun updateUserCondition(condition: String) {
         viewModelScope.launch {
             _userCondition.value = condition
-            repository.updateUserCondition(condition)
+            userPrefs.saveCondition(condition)
         }
     }
 
