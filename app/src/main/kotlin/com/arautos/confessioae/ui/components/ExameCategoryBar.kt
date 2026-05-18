@@ -6,7 +6,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -41,7 +40,7 @@ fun ExameCategoryBar(
                 onClick = { onCategorySelected(category) },
                 modifier = Modifier.weight(1f),
                 shape = RectangleShape,
-                color = if (isSelected) Color(0xFFEAE1CA) else MaterialTheme.colorScheme.surface,
+                color = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surface,
                 contentColor = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                 border = BorderStroke(
                     width = 1.dp,

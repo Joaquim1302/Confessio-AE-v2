@@ -36,7 +36,9 @@ import com.arautos.confessioae.data.model.ExamEntry
 import com.arautos.confessioae.data.model.ExaminationItem
 import com.arautos.confessioae.data.repository.ExaminationDataProvider
 import com.arautos.confessioae.ui.components.ExameCategoryBar
+import com.arautos.confessioae.ui.theme.ThemeMode
 import com.arautos.confessioae.ui.viewmodel.ExaminationViewModel
+import com.arautos.confessioae.ui.viewmodel.ThemeViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -54,7 +56,7 @@ fun HomeScreen() {
         Spacer(modifier = Modifier.height(30.dp))
         // Início da moldura com fundo colorido e bordas
         Surface(
-            color = Color(0xFFEEEAE4),
+            color = MaterialTheme.colorScheme.surfaceVariant,
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -115,7 +117,7 @@ fun HomeScreen() {
                         Text(
                             text = number,
                             style = MaterialTheme.typography.bodySmall.copy(
-                                color = Color(0xFFA97F1A),
+                                color = MaterialTheme.colorScheme.primary,
                                 fontSize = MaterialTheme.typography.bodySmall.fontSize * 0.7f,
                                 fontWeight = FontWeight.Bold
                             ),
@@ -211,7 +213,7 @@ fun ExaminationItemRow(item: ExaminationItem, isSelected: Boolean, onToggle: () 
         onClick = onToggle,
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
-            containerColor = if (isSelected) Color(0xFFDBD9D2) else MaterialTheme.colorScheme.surface
+            containerColor = if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f) else MaterialTheme.colorScheme.surface
         ),
         border = BorderStroke(1.dp, if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline)
     ) {
@@ -404,21 +406,21 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
                             },
                             modifier = Modifier.fillMaxWidth(),
                             colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-                            border = BorderStroke(1.dp, Color(0xFFDBD9D2))
+                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
                         ) {
                             Row(
                                 modifier = Modifier.padding(16.dp).fillMaxWidth(),
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(Icons.Default.Add, contentDescription = null, tint = Color(0xFF000000))
+                                Icon(Icons.Default.Add, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface)
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = entry.text,
                                     style = MaterialTheme.typography.bodyLarge.copy(
                                         fontStyle = FontStyle.Normal,
                                         fontWeight = FontWeight.Bold,
-                                        color = Color(0xFF000000)
+                                        color = MaterialTheme.colorScheme.onSurface
                                     )
                                 )
                             }
@@ -482,7 +484,7 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
                 showAcolhimento = true
             },
             modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA97F1A)),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             shape = MaterialTheme.shapes.medium
         ) {
             Text("Recebi a absolvição", style = MaterialTheme.typography.titleMedium, color = Color.White)
@@ -534,7 +536,7 @@ fun ConfessionSectionTitle(title: String) {
     Text(
         title.uppercase(),
         style = MaterialTheme.typography.labelLarge,
-        color = Color(0xFFA97F1A),
+        color = MaterialTheme.colorScheme.primary,
         fontWeight = FontWeight.Bold,
         modifier = Modifier.padding(top = 8.dp)
     )
@@ -552,7 +554,7 @@ fun ExpandableTextItem(
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        border = BorderStroke(1.dp, Color(0xFFDBD9D2))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(
@@ -562,7 +564,7 @@ fun ExpandableTextItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (icon != null) {
-                    Icon(icon, contentDescription = null, tint = Color(0xFFA97F1A), modifier = Modifier.size(20.dp))
+                    Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                     Spacer(modifier = Modifier.width(8.dp))
                 }
                 Text(title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
@@ -577,9 +579,9 @@ fun ExpandableTextItem(
                 OutlinedButton(
                     onClick = { expanded = true },
                     modifier = Modifier.align(Alignment.Start),
-                    border = BorderStroke(1.dp, Color(0xFFA97F1A))
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
                 ) {
-                    Text(buttonText, color = Color(0xFFA97F1A))
+                    Text(buttonText, color = MaterialTheme.colorScheme.primary)
                 }
             }
 
@@ -611,7 +613,7 @@ fun LastConfessionItem(lastDate: Long?, onDateSelected: (Long) -> Unit) {
         onClick = { showDatePicker = true },
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        border = BorderStroke(1.dp, Color(0xFFDBD9D2))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -674,7 +676,7 @@ fun ConditionItem(condition: String?, onConditionSelected: (String) -> Unit) {
         },
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        border = BorderStroke(1.dp, Color(0xFFDBD9D2))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -796,7 +798,7 @@ fun AcolhimentoEspiritualScreen(onDismiss: () -> Unit) {
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(),
-            color = Color(0xFF1A1A1A)
+            color = MaterialTheme.colorScheme.background
         ) {
             var startAnimation by remember { mutableStateOf(value = false) }
             LaunchedEffect(Unit) {
@@ -827,9 +829,9 @@ fun AcolhimentoEspiritualScreen(onDismiss: () -> Unit) {
                         .background(
                             brush = androidx.compose.ui.graphics.Brush.verticalGradient(
                                 colors = listOf(
-                                    Color(0xFFA97F1A).copy(alpha = 0.1f * alpha),
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f * alpha),
                                     Color.Transparent,
-                                    Color(0xFFA97F1A).copy(alpha = 0.2f * alpha)
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.2f * alpha)
                                 )
                             )
                         )
@@ -842,21 +844,21 @@ fun AcolhimentoEspiritualScreen(onDismiss: () -> Unit) {
                         .alpha(alpha),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    //Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(40.dp))
 
                     Text(
                         "Deus te acolhe com amor.",
                         style = MaterialTheme.typography.headlineMedium,
-                        color = Color(0xFFD4AF37),
+                        color = MaterialTheme.colorScheme.primary,
                         textAlign = TextAlign.Center
                     )
 
-                    Spacer(modifier = Modifier.height(10.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
                     Text(
                         "Seu Roteiro foi concluído.\nA misericórdia do Senhor renovou seu coração.",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onBackground,
                         textAlign = TextAlign.Center
                     )
 
@@ -865,7 +867,7 @@ fun AcolhimentoEspiritualScreen(onDismiss: () -> Unit) {
                     Text(
                         "Vá em paz e cumpra sua penitência.\nO Senhor caminha com você.",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.White.copy(alpha = 0.8f),
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
                         textAlign = TextAlign.Center,
                         fontStyle = FontStyle.Italic
                     )
@@ -874,10 +876,10 @@ fun AcolhimentoEspiritualScreen(onDismiss: () -> Unit) {
                     
                     Button(
                         onClick = onDismiss,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFA97F1A)),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         shape = MaterialTheme.shapes.large
                     ) {
-                        Text("Amém", modifier = Modifier.padding(horizontal = 32.dp, vertical = 8.dp))
+                        Text("Amém", modifier = Modifier.padding(horizontal = 32.dp, vertical = 8.dp), color = MaterialTheme.colorScheme.onPrimary)
                     }
                 }
             }
@@ -926,7 +928,9 @@ fun CustomItemDialog(
 }
 
 @Composable
-fun SobreScreen() {
+fun SobreScreen(themeViewModel: ThemeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+    val themeMode by themeViewModel.themeMode.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -943,6 +947,7 @@ fun SobreScreen() {
             "Este aplicativo foi desenvolvido para auxiliar fiéis católicos na preparação para o Sacramento da Confissão, através de um Roteiro acolhedor.",
             style = MaterialTheme.typography.bodyLarge
         )
+
         Image(
             painter = painterResource(id = com.arautos.confessioae.R.drawable.icone_570),
             contentDescription = "Ícone Arautos",
@@ -957,22 +962,50 @@ fun SobreScreen() {
             color = MaterialTheme.colorScheme.primary
         )
 
+        // Seção de Tema
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    "Tema",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+
+                ThemeOption("Claro", themeMode == ThemeMode.LIGHT) {
+                    themeViewModel.setThemeMode(ThemeMode.LIGHT)
+                }
+                ThemeOption("Escuro", themeMode == ThemeMode.DARK) {
+                    themeViewModel.setThemeMode(ThemeMode.DARK)
+                }
+                ThemeOption("Android", themeMode == ThemeMode.SYSTEM) {
+                    themeViewModel.setThemeMode(ThemeMode.SYSTEM)
+                }
+            }
+        }
 
         Text(
             "Aplicativo sem fins lucrativos desenvolvido para auxiliar fiéis na preparação para o Sacramento da Confissão.",
             style = MaterialTheme.typography.bodyMedium
         )
+    }
+}
 
-        
-
-
-      /*  ConfessioButton(
-            text = "Excluir Todos os Dados",
-            onClick = { 
-                viewModel.clearAllData()
-                onClear()
-            },
-            containerColor = MaterialTheme.colorScheme.error
-        )*/
+@Composable
+fun ThemeOption(text: String, selected: Boolean, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(selected = selected, onClick = null)
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(text, style = MaterialTheme.typography.bodyLarge)
     }
 }
