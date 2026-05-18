@@ -30,6 +30,9 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
     private val _confessedIds = MutableStateFlow<Set<String>>(emptySet())
     val confessedIds: StateFlow<Set<String>> = _confessedIds.asStateFlow()
 
+    private val _explanations = MutableStateFlow<Map<String, String>>(emptyMap())
+    val explanations: StateFlow<Map<String, String>> = _explanations.asStateFlow()
+
     init {
         viewModelScope.launch {
             repository.selectedIds.collect { ids ->
@@ -43,6 +46,17 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
                         _customItems.value = Json.decodeFromString<List<ExamEntry.Custom>>(json)
                     } catch (_: Exception) {
                         _customItems.value = emptyList()
+                    }
+                }
+            }
+        }
+        viewModelScope.launch {
+            repository.explanationsJson.collect { json ->
+                if (json != null) {
+                    try {
+                        _explanations.value = Json.decodeFromString<Map<String, String>>(json)
+                    } catch (_: Exception) {
+                        _explanations.value = emptyMap()
                     }
                 }
             }
@@ -116,6 +130,19 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
         _confessedIds.value = if (current.contains(id)) current - id else current + id
     }
 
+    fun saveExplanation(id: String, text: String) {
+        viewModelScope.launch {
+            val current = _explanations.value.toMutableMap()
+            if (text.isBlank()) {
+                current.remove(id)
+            } else {
+                current[id] = text
+            }
+            _explanations.value = current
+            repository.updateExplanationsJson(Json.encodeToString(current))
+        }
+    }
+
     // Combine standard and custom items for the list screen
     fun getAllListEntries(): Flow<List<ExamEntry>> {
         return combine(selectedIds, customItems) { ids, customs ->
@@ -133,6 +160,7 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
             _selectedIds.value = emptySet()
             _customItems.value = emptyList()
             _confessedIds.value = emptySet()
+            _explanations.value = emptyMap()
             repository.clearAll()
         }
     }
