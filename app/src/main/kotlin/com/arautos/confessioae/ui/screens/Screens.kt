@@ -5,20 +5,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import android.content.Intent
 import android.speech.RecognizerIntent
 import androidx.compose.animation.*
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.automirrored.filled.*
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -41,12 +36,14 @@ import com.arautos.confessioae.data.model.ExamEntry
 import com.arautos.confessioae.data.model.ExaminationItem
 import com.arautos.confessioae.data.repository.ExaminationDataProvider
 import com.arautos.confessioae.ui.components.ExameCategoryBar
+import com.arautos.confessioae.ui.theme.CormorantInfant
 import com.arautos.confessioae.ui.theme.ThemeMode
 import com.arautos.confessioae.ui.viewmodel.ExaminationViewModel
 import com.arautos.confessioae.ui.viewmodel.ThemeViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.compose.ui.platform.LocalLocale
+import kotlinx.coroutines.launch
 
 /**
  * Tela Inicial: Boas-vindas e orientações sobre o sacramento.
@@ -159,15 +156,36 @@ fun ExameScreen(viewModel: ExaminationViewModel) {
     val items = ExaminationDataProvider.items.filter { it.category == category }
     val selectedIds by viewModel.selectedIds.collectAsState()
 
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+
+    val isAtEnd by remember {
+        derivedStateOf {
+            val layoutInfo = listState.layoutInfo
+            val visibleItemsInfo = layoutInfo.visibleItemsInfo
+            if (layoutInfo.totalItemsCount == 0) {
+                false
+            } else {
+                val lastVisibleItem = visibleItemsInfo.lastOrNull()
+                // Verifica se o último item visível é o penúltimo ou o último (contando o item da mini barra)
+                lastVisibleItem != null && lastVisibleItem.index >= layoutInfo.totalItemsCount - 2
+            }
+        }
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
         ExameCategoryBar(
             selectedCategory = category,
             onCategorySelected = { newCategory ->
                 currentStep = categories.indexOf(newCategory)
+                coroutineScope.launch {
+                    listState.scrollToItem(0)
+                }
             }
         )
 
         LazyColumn(
+            state = listState,
             modifier = Modifier.weight(1f).padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -188,7 +206,123 @@ fun ExameScreen(viewModel: ExaminationViewModel) {
                 )
             }
             item {
-                Spacer(modifier = Modifier.height(10.dp))
+                AnimatedVisibility(
+                    visible = isAtEnd,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
+                ) {
+                    Column {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        NavigationMiniBar(
+                            currentCategory = category,
+                            showNextAnimation = true, // Sempre animar quando visível no fim
+                            onPrevious = {
+                                if (currentStep > 0) {
+                                    currentStep--
+                                    coroutineScope.launch {
+                                        listState.scrollToItem(0)
+                                    }
+                                }
+                            },
+                            onNext = {
+                                if (currentStep < categories.size - 1) {
+                                    currentStep++
+                                    coroutineScope.launch {
+                                        listState.scrollToItem(0)
+                                    }
+                                }
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(24.dp))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun NavigationMiniBar(
+    currentCategory: Category,
+    showNextAnimation: Boolean,
+    onPrevious: () -> Unit,
+    onNext: () -> Unit
+) {
+    val categories = Category.entries
+    val currentIndex = categories.indexOf(currentCategory)
+    val hasPrevious = currentIndex > 0
+    val hasNext = currentIndex < categories.size - 1
+
+    val categoryName = when (currentCategory) {
+        Category.DEUS -> "Deus"
+        Category.PROXIMO -> "Próximo"
+        Category.CONSIGO -> "Comigo"
+    }
+
+    val infiniteTransition = rememberInfiniteTransition(label = "next_animation")
+    val nextScale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = if (showNextAnimation && hasNext) 1.3f else 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(800),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "scale"
+    )
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        color = Color.Transparent
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Seta Esquerda
+            Box(modifier = Modifier.size(48.dp)) {
+                if (hasPrevious) {
+                    IconButton(onClick = onPrevious) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                            contentDescription = "Anterior",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+            }
+
+            // Nome da Categoria
+            Text(
+                text = categoryName,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    fontFamily = CormorantInfant,
+                    fontStyle = FontStyle.Italic,
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Center
+                ),
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.weight(1f)
+            )
+
+            // Seta Direita
+            Box(modifier = Modifier.size(48.dp)) {
+                if (hasNext) {
+                    IconButton(
+                        onClick = onNext,
+                        modifier = Modifier.scale(nextScale)
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = "Próximo",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
             }
         }
     }
