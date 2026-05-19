@@ -43,6 +43,8 @@ import com.arautos.confessioae.ui.viewmodel.ThemeViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.compose.ui.platform.LocalLocale
+import androidx.compose.ui.platform.LocalContext
+import com.arautos.confessioae.ui.pdf.PdfExportManager
 import kotlinx.coroutines.launch
 
 /**
@@ -167,7 +169,7 @@ fun ExameScreen(viewModel: ExaminationViewModel) {
                 false
             } else {
                 val lastVisibleItem = visibleItemsInfo.lastOrNull()
-                // Verifica se o último item visível é o penúltimo ou o último (contando o item da mini barra)
+                // Verifica se o último "item" visível é o penúltimo ou o último (contando o "item" da barra de navegação)
                 lastVisibleItem != null && lastVisibleItem.index >= layoutInfo.totalItemsCount - 2
             }
         }
@@ -373,6 +375,9 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
     val explanations by viewModel.explanations.collectAsState()
     val penitenceDone by viewModel.penitenceDone.collectAsState()
 
+    val context = LocalContext.current
+    val pdfManager = remember { PdfExportManager(context) }
+
     var showAcolhimento by remember { mutableStateOf(false) }
     var showCustomDialog by remember { mutableStateOf(false) }
     var editingItem by remember { mutableStateOf<ExamEntry.Custom?>(null) }
@@ -417,6 +422,38 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
                     text = "pecado não relacionado ou uma dúvida",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontStyle = FontStyle.Normal,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                )
+            }
+        }
+
+        Card(
+            onClick = {
+                val lastConfText = if (lastDate != null) "Faz ${calculateTimeSinceLastConfession(lastDate)} que não confesso" else null
+                pdfManager.exportRoteiro(
+                    lastConfessionText = lastConfText,
+                    userCondition = userCondition,
+                    entries = entries,
+                    explanations = explanations
+                )
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+        ) {
+            Row(
+                modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(Icons.Default.PictureAsPdf, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Imprimir em PDF",
                     style = MaterialTheme.typography.bodyLarge.copy(
                         fontStyle = FontStyle.Normal,
                         fontWeight = FontWeight.Bold,
