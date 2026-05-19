@@ -19,6 +19,7 @@ class UserPreferences(private val context: Context) {
         val MY_CONDITION = stringPreferencesKey("my_condition")
         val MY_LAST_CONFESSION = longPreferencesKey("my_last_confession")
         val THEME_MODE = stringPreferencesKey("theme_mode")
+        val PENITENCE_DONE = booleanPreferencesKey("penitence_done")
     }
 
     // Leitura dos dados
@@ -42,6 +43,11 @@ class UserPreferences(private val context: Context) {
             }
         }
 
+    val getPenitenceDone: Flow<Boolean> = context.userPreferencesDataStore.data
+        .map { preferences ->
+            preferences[PreferencesKeys.PENITENCE_DONE] ?: false
+        }
+
     // Escrita dos dados
     suspend fun saveCondition(condition: String) {
         context.userPreferencesDataStore.edit { preferences ->
@@ -58,6 +64,12 @@ class UserPreferences(private val context: Context) {
     suspend fun saveThemeMode(mode: ThemeMode) {
         context.userPreferencesDataStore.edit { preferences ->
             preferences[PreferencesKeys.THEME_MODE] = mode.name
+        }
+    }
+
+    suspend fun savePenitenceDone(done: Boolean) {
+        context.userPreferencesDataStore.edit { preferences ->
+            preferences[PreferencesKeys.PENITENCE_DONE] = done
         }
     }
 }

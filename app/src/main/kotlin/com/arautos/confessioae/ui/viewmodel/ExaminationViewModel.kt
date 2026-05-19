@@ -33,6 +33,9 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
     private val _explanations = MutableStateFlow<Map<String, String>>(emptyMap())
     val explanations: StateFlow<Map<String, String>> = _explanations.asStateFlow()
 
+    private val _penitenceDone = MutableStateFlow(false)
+    val penitenceDone: StateFlow<Boolean> = _penitenceDone.asStateFlow()
+
     init {
         viewModelScope.launch {
             repository.selectedIds.collect { ids ->
@@ -69,6 +72,11 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
         viewModelScope.launch {
             userPrefs.getCondition.collect { condition ->
                 _userCondition.value = condition
+            }
+        }
+        viewModelScope.launch {
+            userPrefs.getPenitenceDone.collect { done ->
+                _penitenceDone.value = done
             }
         }
     }
@@ -130,6 +138,13 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
         _confessedIds.value = if (current.contains(id)) current - id else current + id
     }
 
+    fun updatePenitenceDone(done: Boolean) {
+        viewModelScope.launch {
+            _penitenceDone.value = done
+            userPrefs.savePenitenceDone(done)
+        }
+    }
+
     fun saveExplanation(id: String, text: String) {
         viewModelScope.launch {
             val current = _explanations.value.toMutableMap()
@@ -161,6 +176,8 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
             _customItems.value = emptyList()
             _confessedIds.value = emptySet()
             _explanations.value = emptyMap()
+            _penitenceDone.value = false
+            userPrefs.savePenitenceDone(false)
             repository.clearAll()
         }
     }

@@ -371,6 +371,7 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
     val userCondition by viewModel.userCondition.collectAsState()
     val confessedIds by viewModel.confessedIds.collectAsState()
     val explanations by viewModel.explanations.collectAsState()
+    val penitenceDone by viewModel.penitenceDone.collectAsState()
 
     var showAcolhimento by remember { mutableStateOf(false) }
     var showCustomDialog by remember { mutableStateOf(false) }
@@ -536,6 +537,25 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
             fontStyle = FontStyle.Italic,
             modifier = Modifier.fillMaxWidth()
         )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { viewModel.updatePenitenceDone(!penitenceDone) }
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Checkbox(
+                checked = penitenceDone,
+                onCheckedChange = { viewModel.updatePenitenceDone(it) }
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Penitência concluída",
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Medium
+            )
+        }
 
         Button(
             onClick = {
@@ -1029,6 +1049,9 @@ fun ExplanationDialog(
     )
 }
 
+/**
+ * Tela Sobre: Informações sobre o aplicativo e configurações de tema.
+ */
 @Composable
 fun SobreScreen(themeViewModel: ThemeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
     val themeMode by themeViewModel.themeMode.collectAsState()
