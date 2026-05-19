@@ -151,7 +151,7 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
                 .map { ExamEntry.Standard(it.id, it.text) }
                 .toList()
             
-            standardEntries + customs + ExamEntry.PermanentAdd
+            standardEntries + customs
         }
     }
 

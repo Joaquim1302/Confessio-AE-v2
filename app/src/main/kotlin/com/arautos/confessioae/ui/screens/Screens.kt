@@ -46,6 +46,7 @@ import com.arautos.confessioae.ui.viewmodel.ExaminationViewModel
 import com.arautos.confessioae.ui.viewmodel.ThemeViewModel
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.ui.platform.LocalLocale
 
 /**
  * Tela Inicial: Boas-vindas e orientações sobre o sacramento.
@@ -236,7 +237,7 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
     val userCondition by viewModel.userCondition.collectAsState()
     val confessedIds by viewModel.confessedIds.collectAsState()
     val explanations by viewModel.explanations.collectAsState()
-    
+
     var showAcolhimento by remember { mutableStateOf(false) }
     var showCustomDialog by remember { mutableStateOf(false) }
     var editingItem by remember { mutableStateOf<ExamEntry.Custom?>(null) }
@@ -262,6 +263,33 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
             condition = userCondition,
             onConditionSelected = { viewModel.updateUserCondition(it) }
         )
+
+        Card(
+            onClick = {
+                editingItem = null
+                showCustomDialog = true
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+        ) {
+            Row(
+                modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(Icons.Default.Add, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "pecado não relacionado ou uma dúvida",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontStyle = FontStyle.Normal,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                )
+            }
+        }
 
         ConfessionSectionTitle("Início")
         Text(
@@ -313,139 +341,39 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
             )
         } else {
             entries.forEach { entry ->
-                val hasExplanation = explanations.containsKey(entry.id)
-                val explanation = explanations[entry.id]
-                
                 when (entry) {
                     is ExamEntry.Standard -> {
-                        val isConfessed = confessedIds.contains(entry.id)
-                        Card(
-                            onClick = { viewModel.toggleConfessed(entry.id) },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = Color.Transparent)
-                        ) {
-                            Column(modifier = Modifier.padding(6.dp).fillMaxWidth()) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Checkbox(
-                                        checked = isConfessed,
-                                        onCheckedChange = { viewModel.toggleConfessed(entry.id) }
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(
-                                        text = entry.text,
-                                        modifier = Modifier.weight(1f),
-                                        style = MaterialTheme.typography.bodyLarge.copy(
-                                            fontStyle = FontStyle.Italic,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    )
-                                    IconButton(onClick = {
-                                        explanationEntryId = entry.id
-                                        explanationSinText = entry.text
-                                        showExplanationDialog = true
-                                    }) {
-                                        Icon(
-                                            imageVector = if (hasExplanation) Icons.Default.Edit else Icons.Default.Add,
-                                            contentDescription = "Adicionar explicação",
-                                            tint = if (hasExplanation) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
-                                        )
-                                    }
-                                }
-                                if (!explanation.isNullOrBlank()) {
-                                    Text(
-                                        text = "“$explanation”",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        fontStyle = FontStyle.Italic,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.padding(start = 48.dp, bottom = 4.dp)
-                                    )
-                                }
+                        ConfessionSinItem(
+                            entry = entry,
+                            isConfessed = confessedIds.contains(entry.id),
+                            explanation = explanations[entry.id],
+                            onToggleConfessed = { viewModel.toggleConfessed(entry.id) },
+                            onAddEditExplanation = {
+                                explanationEntryId = entry.id
+                                explanationSinText = entry.text
+                                showExplanationDialog = true
                             }
-                        }
+                        )
                     }
                     is ExamEntry.Custom -> {
-                        val isConfessed = confessedIds.contains(entry.id)
-                        Card(
-                            onClick = { viewModel.toggleConfessed(entry.id) },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = Color.Transparent)
-                        ) {
-                            Column(modifier = Modifier.padding(6.dp).fillMaxWidth()) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Checkbox(
-                                        checked = isConfessed,
-                                        onCheckedChange = { viewModel.toggleConfessed(entry.id) }
-                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(
-                                        text = entry.text,
-                                        modifier = Modifier.weight(1f),
-                                        style = MaterialTheme.typography.bodyLarge.copy(
-                                            fontStyle = FontStyle.Italic,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    )
-                                    IconButton(onClick = {
-                                        explanationEntryId = entry.id
-                                        explanationSinText = entry.text
-                                        showExplanationDialog = true
-                                    }) {
-                                        Icon(
-                                            imageVector = if (hasExplanation) Icons.Default.Edit else Icons.Default.Add,
-                                            contentDescription = "Adicionar explicação",
-                                            tint = if (hasExplanation) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
-                                        )
-                                    }
-                                    IconButton(onClick = { 
-                                        editingItem = entry
-                                        showCustomDialog = true
-                                    }) {
-                                        Icon(Icons.Default.Edit, contentDescription = "Editar", tint = MaterialTheme.colorScheme.primary)
-                                    }
-                                    IconButton(onClick = { viewModel.deleteCustomItem(entry.id) }) {
-                                        Icon(Icons.Default.Delete, contentDescription = "Remover", tint = MaterialTheme.colorScheme.error)
-                                    }
-                                }
-                                if (!explanation.isNullOrBlank()) {
-                                    Text(
-                                        text = "“$explanation”",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        fontStyle = FontStyle.Italic,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.padding(start = 48.dp, bottom = 4.dp)
-                                    )
-                                }
-                            }
-                        }
-                    }
-                    is ExamEntry.PermanentAdd -> {
-                        Card(
-                            onClick = {
-                                editingItem = null
+                        ConfessionSinItem(
+                            entry = entry,
+                            isConfessed = confessedIds.contains(entry.id),
+                            explanation = explanations[entry.id],
+                            onToggleConfessed = { viewModel.toggleConfessed(entry.id) },
+                            onAddEditExplanation = {
+                                explanationEntryId = entry.id
+                                explanationSinText = entry.text
+                                showExplanationDialog = true
+                            },
+                            onEditCustom = {
+                                editingItem = entry
                                 showCustomDialog = true
                             },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-                            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(16.dp).fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(Icons.Default.Add, contentDescription = null, tint = MaterialTheme.colorScheme.onSurface)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = entry.text,
-                                    style = MaterialTheme.typography.bodyLarge.copy(
-                                        fontStyle = FontStyle.Normal,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                )
-                            }
-                        }
+                            onDeleteCustom = { viewModel.deleteCustomItem(entry.id) }
+                        )
                     }
+                    else -> {}
                 }
             }
         }
@@ -534,6 +462,83 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
 }
 
 @Composable
+fun ConfessionSinItem(
+    entry: ExamEntry,
+    isConfessed: Boolean,
+    explanation: String?,
+    onToggleConfessed: () -> Unit,
+    onAddEditExplanation: () -> Unit,
+    onEditCustom: (() -> Unit)? = null,
+    onDeleteCustom: (() -> Unit)? = null
+) {
+    val hasExplanation = !explanation.isNullOrBlank()
+    Card(
+        onClick = onToggleConfessed,
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent)
+    ) {
+        Row(
+            modifier = Modifier.padding(vertical = 4.dp).fillMaxWidth(),
+            verticalAlignment = Alignment.Top
+        ) {
+            Checkbox(
+                checked = isConfessed,
+                onCheckedChange = { onToggleConfessed() }
+            )
+            Column(modifier = Modifier.weight(1f).padding(top = 12.dp)) {
+                if (hasExplanation) {
+                    Text(
+                        text = explanation,
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = entry.text,
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontStyle = FontStyle.Italic,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+                        )
+                    )
+                } else {
+                    Text(
+                        text = entry.text,
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            fontStyle = FontStyle.Italic,
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                }
+            }
+            Row(
+                modifier = Modifier.padding(top = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onAddEditExplanation) {
+                    Icon(
+                        imageVector = if (hasExplanation) Icons.Default.Edit else Icons.Default.Add,
+                        contentDescription = "Adicionar/Editar explicação",
+                        tint = if (hasExplanation) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+                    )
+                }
+                if (onEditCustom != null) {
+                    IconButton(onClick = onEditCustom) {
+                        Icon(Icons.Default.Edit, contentDescription = "Editar", tint = MaterialTheme.colorScheme.primary)
+                    }
+                }
+                if (onDeleteCustom != null) {
+                    IconButton(onClick = onDeleteCustom) {
+                        Icon(Icons.Default.Delete, contentDescription = "Remover", tint = MaterialTheme.colorScheme.error)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun ConfessionSectionTitle(title: String) {
     Text(
         title.uppercase(),
@@ -618,7 +623,7 @@ fun LastConfessionItem(lastDate: Long?, onDateSelected: (Long) -> Unit) {
             Column(modifier = Modifier.weight(1f)) {
                 Text("Última confissão:", style = MaterialTheme.typography.labelMedium)
                 val dateDisplay = if (lastDate != null) {
-                    SimpleDateFormat("dd/MMM/yyyy", Locale.getDefault()).format(Date(lastDate))
+                    SimpleDateFormat("dd/MMM/yyyy", LocalLocale.current.platformLocale).format(Date(lastDate))
                 } else {
                     "Toque para selecionar a data"
                 }
@@ -657,8 +662,8 @@ fun ConditionItem(condition: String?, onConditionSelected: (String) -> Unit) {
         "Religioso(a)", "Seminarista"
     )
     Card(
-        onClick = { 
-            showDialog = true 
+        onClick = {
+            showDialog = true
             isCustom = condition != null && condition !in options
         },
         modifier = Modifier.fillMaxWidth(),

@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.arautos.confessioae"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.arautos.confessioae"
         minSdk = 29
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 2
         versionName = "2.1"
 
