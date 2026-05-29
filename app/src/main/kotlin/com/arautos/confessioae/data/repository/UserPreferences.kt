@@ -72,4 +72,12 @@ class UserPreferences(private val context: Context) {
             preferences[PreferencesKeys.PENITENCE_DONE] = done
         }
     }
+
+    suspend fun clearAll() {
+        context.userPreferencesDataStore.edit { preferences ->
+            preferences.remove(PreferencesKeys.MY_CONDITION)
+            preferences.remove(PreferencesKeys.MY_LAST_CONFESSION)
+            preferences.remove(PreferencesKeys.PENITENCE_DONE)
+        }
+    }
 }

@@ -177,7 +177,9 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
             _confessedIds.value = emptySet()
             _explanations.value = emptyMap()
             _penitenceDone.value = false
-            userPrefs.savePenitenceDone(false)
+            _userCondition.value = null
+            _lastConfessionDate.value = null
+            userPrefs.clearAll()
             repository.clearAll()
         }
     }

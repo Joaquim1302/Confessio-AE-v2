@@ -243,6 +243,9 @@ fun ExameScreen(viewModel: ExaminationViewModel) {
     }
 }
 
+/**
+ * Componente de barra de navegação mini para alternar entre categorias no exame.
+ */
 @Composable
 fun NavigationMiniBar(
     currentCategory: Category,
@@ -330,6 +333,9 @@ fun NavigationMiniBar(
     }
 }
 
+/**
+ * Linha que representa um item de pecado no exame de consciência.
+ */
 @Composable
 fun ExaminationItemRow(item: ExaminationItem, isSelected: Boolean, onToggle: () -> Unit) {
     Card(
@@ -378,6 +384,8 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
     val context = LocalContext.current
     val pdfManager = remember { PdfExportManager(context) }
 
+    val displayCondition = if (userCondition.isNullOrBlank()) null else userCondition
+
     var showAcolhimento by remember { mutableStateOf(false) }
     var showCustomDialog by remember { mutableStateOf(false) }
     var editingItem by remember { mutableStateOf<ExamEntry.Custom?>(null) }
@@ -400,7 +408,7 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
             onDateSelected = { viewModel.updateLastConfessionDate(it) }
         )
         ConditionItem(
-            condition = userCondition,
+            condition = displayCondition,
             onConditionSelected = { viewModel.updateUserCondition(it) }
         )
 
@@ -436,7 +444,7 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
                 val lastConfText = if (lastDate != null) "Faz ${calculateTimeSinceLastConfession(lastDate)} que não confesso" else null
                 pdfManager.exportRoteiro(
                     lastConfessionText = lastConfText,
-                    userCondition = userCondition,
+                    userCondition = displayCondition,
                     entries = entries,
                     explanations = explanations
                 )
@@ -492,9 +500,9 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
             )
         }
 
-        if (!userCondition.isNullOrBlank()) {
+        if (!displayCondition.isNullOrBlank()) {
             Text(
-                "Sou $userCondition",
+                "Sou $displayCondition",
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Left,
@@ -652,6 +660,9 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
     }
 }
 
+/**
+ * Item individual de pecado na tela de roteiro de confissão.
+ */
 @Composable
 fun ConfessionSinItem(
     entry: ExamEntry,
@@ -729,6 +740,9 @@ fun ConfessionSinItem(
     }
 }
 
+/**
+ * Título de seção na tela de roteiro.
+ */
 @Composable
 fun ConfessionSectionTitle(title: String) {
     Text(
@@ -740,6 +754,9 @@ fun ConfessionSectionTitle(title: String) {
     )
 }
 
+/**
+ * Item de texto expansível para orações e orientações.
+ */
 @Composable
 fun ExpandableTextItem(
     title: String,
@@ -796,6 +813,9 @@ fun ExpandableTextItem(
     }
 }
 
+/**
+ * Seção para selecionar a data da última confissão.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LastConfessionItem(lastDate: Long?, onDateSelected: (Long) -> Unit) {
@@ -842,6 +862,9 @@ fun LastConfessionItem(lastDate: Long?, onDateSelected: (Long) -> Unit) {
     }
 }
 
+/**
+ * Seção para selecionar a condição do usuário (estado civil, etc).
+ */
 @Composable
 fun ConditionItem(condition: String?, onConditionSelected: (String) -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
@@ -927,6 +950,9 @@ fun ConditionItem(condition: String?, onConditionSelected: (String) -> Unit) {
     }
 }
 
+/**
+ * Tela de acolhimento espiritual exibida após a absolvição.
+ */
 @Composable
 fun AcolhimentoEspiritualScreen(onDismiss: () -> Unit) {
     Dialog(
@@ -966,19 +992,21 @@ fun AcolhimentoEspiritualScreen(onDismiss: () -> Unit) {
                     modifier = Modifier.fillMaxSize().padding(24.dp).alpha(alpha),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Spacer(modifier = Modifier.height(40.dp))
+                    Spacer(modifier = Modifier.height(15.dp))
                     Text(
                         "Deus te acolhe com amor.",
-                        style = MaterialTheme.typography.headlineMedium,
+                        style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.primary,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        fontStyle = FontStyle.Italic
                     )
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(5.dp))
                     Text(
                         "Seu Roteiro foi concluído.\nA misericórdia do Senhor renovou seu coração.",
-                        style = MaterialTheme.typography.bodyLarge,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onBackground,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        fontStyle = FontStyle.Italic
                     )
                     Spacer(modifier = Modifier.weight(1f))
                     Text(
@@ -1002,6 +1030,9 @@ fun AcolhimentoEspiritualScreen(onDismiss: () -> Unit) {
     }
 }
 
+/**
+ * Diálogo para adicionar ou editar um pecado customizado.
+ */
 @Composable
 fun CustomItemDialog(
     initialText: String,
@@ -1034,6 +1065,9 @@ fun CustomItemDialog(
     )
 }
 
+/**
+ * Diálogo para adicionar uma explicação ou observação a um pecado.
+ */
 @Composable
 fun ExplanationDialog(
     sinText: String,
@@ -1090,8 +1124,14 @@ fun ExplanationDialog(
  * Tela Sobre: Informações sobre o aplicativo e configurações de tema.
  */
 @Composable
-fun SobreScreen(themeViewModel: ThemeViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun SobreScreen(
+    themeViewModel: ThemeViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    viewModel: ExaminationViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+) {
     val themeMode by themeViewModel.themeMode.collectAsState()
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp).verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -1118,9 +1158,43 @@ fun SobreScreen(themeViewModel: ThemeViewModel = androidx.lifecycle.viewmodel.co
             }
         }
         Text("Aplicativo sem fins lucrativos desenvolvido para auxiliar fiéis na preparação para o Sacramento da Confissão.", style = MaterialTheme.typography.bodyMedium)
+
+        Button(
+            onClick = {
+                showDeleteDialog = true
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+            shape = MaterialTheme.shapes.medium
+        ) {
+            Text("Limpar todos os dados", style = MaterialTheme.typography.titleMedium, color = Color.White)
+        }
+    }
+
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Limpar todos os dados?") },
+            text = { Text("Esta ação apagará permanentemente todos os seus registros de pecados, observações, condição e data da última confissão. Deseja continuar?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.clearAllData()
+                        showDeleteDialog = false
+                        android.widget.Toast.makeText(context, "Todos os dados foram apagados", android.widget.Toast.LENGTH_SHORT).show()
+                    }
+                ) { Text("Limpar", color = MaterialTheme.colorScheme.error) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) { Text("Cancelar") }
+            }
+        )
     }
 }
 
+/**
+ * Opção de seleção de tema (Claro/Escuro/Sistema).
+ */
 @Composable
 fun ThemeOption(text: String, selected: Boolean, onClick: () -> Unit) {
     Row(
@@ -1133,6 +1207,9 @@ fun ThemeOption(text: String, selected: Boolean, onClick: () -> Unit) {
     }
 }
 
+/**
+ * Calcula o tempo decorrido desde a última confissão em formato legível.
+ */
 fun calculateTimeSinceLastConfession(lastDateMillis: Long?): String {
     if (lastDateMillis == null) return "n dias"
     val now = Calendar.getInstance()
