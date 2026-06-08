@@ -899,7 +899,7 @@ fun ConditionItem(condition: String?, onConditionSelected: (String) -> Unit) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
             modifier = Modifier.scale(0.9f),
-            title = { Text("Selecione sua condição", fontSize = 26.sp) },
+            title = { Text("Selecione sua condição", fontSize = 26.sp, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold) },
             text = {
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                     options.forEach { option ->
@@ -1040,18 +1040,48 @@ fun CustomItemDialog(
     onSave: (String) -> Unit
 ) {
     var text by remember { mutableStateOf(initialText) }
+    val speechLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            val spokenText = result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.get(0)
+            if (spokenText != null) {
+                text = if (text.isBlank()) spokenText else "$text $spokenText"
+            }
+        }
+    }
     AlertDialog(
         onDismissRequest = onDismiss,
         modifier = Modifier.scale(0.9f),
-        title = { Text(if (initialText.isEmpty()) "Adicionar Pecado ou Dúvida" else "Editar Pecado ou Dúvida", fontSize = 26.sp) },
-        text = {
-            OutlinedTextField(
-                value = text,
-                onValueChange = { text = it },
-                modifier = Modifier.fillMaxWidth().height(150.dp),
-                placeholder = { Text("Descreva aqui seu pecado ou dúvida…", fontSize = 20.sp) },
-                minLines = 3
+        title = {
+            Text(
+                if (initialText.isEmpty()) "Adicionar Pecado ou Dúvida" else "Editar Pecado ou Dúvida",
+                fontSize = 20.sp,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold
             )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedTextField(
+                    value = text,
+                    onValueChange = { text = it },
+                    modifier = Modifier.fillMaxWidth().height(150.dp),
+                    placeholder = { Text("Descreva aqui seu pecado ou dúvida…", fontSize = 18.sp) },
+                    minLines = 3
+                )
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                    FilledTonalIconButton(
+                        onClick = {
+                            val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                                putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault())
+                            }
+                            try { speechLauncher.launch(intent) } catch (e: Exception) {}
+                        }
+                    ) { Icon(Icons.Default.Mic, contentDescription = "Ditar") }
+                }
+            }
         },
         confirmButton = {
             TextButton(
@@ -1174,7 +1204,7 @@ fun SobreScreen(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Limpar todos os dados?") },
+            title = { Text("Limpar todos os dados?", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold) },
             text = { Text("Esta ação apagará permanentemente todos os seus registros de pecados, observações, condição e data da última confissão. Deseja continuar?") },
             confirmButton = {
                 TextButton(
