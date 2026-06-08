@@ -608,10 +608,11 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
                 showAcolhimento = true
             },
             modifier = Modifier.fillMaxWidth(),
+            enabled = penitenceDone,
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
             shape = MaterialTheme.shapes.medium
         ) {
-            Text("Recebi a absolvição", style = MaterialTheme.typography.titleMedium, color = Color.White)
+            Text("Recebi a absolvição", style = MaterialTheme.typography.titleMedium, color = if (penitenceDone) Color.White else Color.White.copy(alpha = 0.38f))
         }
 
         Spacer(modifier = Modifier.height(32.dp))
