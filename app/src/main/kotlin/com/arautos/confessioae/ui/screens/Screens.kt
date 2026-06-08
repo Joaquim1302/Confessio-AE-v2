@@ -619,7 +619,7 @@ fun GuidedConfessionScreen(viewModel: ExaminationViewModel, onFinish: () -> Unit
 
     if (showAcolhimento) {
         AcolhimentoEspiritualScreen(onDismiss = {
-            viewModel.clearAllData()
+            viewModel.clearSessionData()
             onFinish()
         })
     }

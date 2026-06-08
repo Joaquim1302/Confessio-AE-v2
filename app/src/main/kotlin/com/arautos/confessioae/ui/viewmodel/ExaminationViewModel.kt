@@ -170,6 +170,18 @@ class ExaminationViewModel(application: Application) : AndroidViewModel(applicat
         }
     }
 
+    fun clearSessionData() {
+        viewModelScope.launch {
+            _selectedIds.value = emptySet()
+            _customItems.value = emptyList()
+            _confessedIds.value = emptySet()
+            _explanations.value = emptyMap()
+            _penitenceDone.value = false
+            userPrefs.savePenitenceDone(false)
+            repository.clearAll()
+        }
+    }
+
     fun clearAllData() {
         viewModelScope.launch {
             _selectedIds.value = emptySet()
