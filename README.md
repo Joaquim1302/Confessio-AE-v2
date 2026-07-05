@@ -10,7 +10,6 @@
   <img src="https://img.shields.io/badge/IA-Gemini%20%7C%20ChatGPT%20%7C%20Copilot-purple">
 </p>
 
-
 **Confessio AE** é um assistente Android desenvolvido para auxiliar fiéis católicos na preparação e realização do Sacramento da Confissão. O aplicativo oferece um roteiro estruturado e acolhedor, focado na introspecção e na organização das faltas para um encontro frutuoso com a misericórdia divina.
 
 ---
