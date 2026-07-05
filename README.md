@@ -1,4 +1,8 @@
-# Confessio AE
+<h1>
+  <img src="docs/images/vitaltrack_icon.png" alt="Ícone VitalTrack" width="42" align="left">
+  Confessio AE
+</h1>
+
 
 **Confessio AE** é um assistente Android desenvolvido para auxiliar fiéis católicos na preparação e realização do Sacramento da Confissão. O aplicativo oferece um roteiro estruturado e acolhedor, focado na introspecção e na organização das faltas para um encontro frutuoso com a misericórdia divina.
 
@@ -28,7 +32,7 @@
 
 | Início                                               | Exame                                              | Roteiro                                                | Sobre                                              |
 |:----------------------------------------------------:|:--------------------------------------------------:|:------------------------------------------------------:|:--------------------------------------------------:|
-| ![Home](E:\Android\bak\ConfessioAE\img\dasboard.jpg) | ![Exame](E:\Android\bak\ConfessioAE\img\exame.jpg) | ![Roteiro](E:\Android\bak\ConfessioAE\img\roteiro.jpg) | ![Sobre](E:\Android\bak\ConfessioAE\img\sobre.jpg) |
+| ![Home](https://github.com/Joaquim1302/Confessio-AE-v2/blob/main/screenshots/dasboard.webp) | ![Exame](https://github.com/Joaquim1302/Confessio-AE-v2/blob/main/screenshots/exame.webp) | ![Roteiro](https://github.com/Joaquim1302/Confessio-AE-v2/blob/main/screenshots/roteiro.webp) | ![Sobre](https://github.com/Joaquim1302/Confessio-AE-v2/blob/main/screenshots/sobre.webp) |
 
 *(Nota: Substitua as imagens acima por prints reais do seu aplicativo após o upload)*
 
