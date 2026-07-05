@@ -3,7 +3,13 @@
   Confessio AE
   <p></p>
 </h1>
-<br>
+<p align="center">  
+  <img src="https://img.shields.io/badge/Status-em%20Desenvolvimento-blue">
+  <img src="https://img.shields.io/badge/plataforma-Android-green">
+  <img src="https://img.shields.io/badge/Android-10%2B-green">
+  <img src="https://img.shields.io/badge/IA-Gemini%20%7C%20ChatGPT%20%7C%20Copilot-purple">
+</p>
+
 
 **Confessio AE** é um assistente Android desenvolvido para auxiliar fiéis católicos na preparação e realização do Sacramento da Confissão. O aplicativo oferece um roteiro estruturado e acolhedor, focado na introspecção e na organização das faltas para um encontro frutuoso com a misericórdia divina.
 
@@ -19,6 +25,18 @@
 - **Gestão de Penitência**: Controle visual para marcar a conclusão da penitência imposta pelo confessor.
 - **Privacidade e Persistência**: Todos os dados são salvos localmente no dispositivo via DataStore. O aplicativo oferece uma opção de limpeza total para garantir a privacidade do fiel.
 - **Tema Dinâmico**: Suporte total a modo claro, modo escuro e fontes dinâmicas para melhor legibilidade.
+
+Recursos planejados ou considerados para versões futuras:
+
+- melhorias de privacidade;
+- autenticação biométrica;
+- criptografia local;
+- `EncryptedSharedPreferences`;
+- Android Keystore;
+- SQLCipher para dados locais sensíveis;
+- bloqueio de tela interna;
+- opções de limpeza de dados;
+- versão para Apple iOS.
 
 ## 🛠️ Tecnologias Utilizadas
 
