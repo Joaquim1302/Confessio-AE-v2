@@ -1,20 +1,55 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Confessio AE
 
-# Run and deploy your AI Studio app
+**Confessio AE** é um assistente Android desenvolvido para auxiliar fiéis católicos na preparação e realização do Sacramento da Confissão. O aplicativo oferece um roteiro estruturado e acolhedor, focado na introspecção e na organização das faltas para um encontro frutuoso com a misericórdia divina.
 
-This contains everything you need to run your app locally.
+---
 
-View your app in AI Studio: https://ai.studio/apps/611f6237-d030-4e32-a8e8-fa4fbc6a1bdb
+## ✨ Funcionalidades
 
-## Run Locally
+- **Exame de Consciência Guiado**: Baseado no texto original dos Arautos do Evangelho, o exame é dividido em categorias (Deus, Próximo e Consigo) para facilitar a reflexão.
+- **Registro de Pecados e Dúvidas**: Permite selecionar pecados pré-definidos ou adicionar itens customizados (texto ou voz) que não constam na lista.
+- **Observações Detalhadas**: Adicione notas específicas a cada pecado para lembrar de circunstâncias ou frequência durante a confissão.
+- **Roteiro Litúrgico**: Uma tela dedicada que guia o usuário desde o momento da entrada no confessionário até a absolvição, incluindo fórmulas como o Ato de Contrição.
+- **Exportação em PDF**: Gere um roteiro impresso em duas colunas, otimizado para papel A4, pensado para ser usado de forma discreta e prática dentro do confessionário.
+- **Gestão de Penitência**: Controle visual para marcar a conclusão da penitência imposta pelo confessor.
+- **Privacidade e Persistência**: Todos os dados são salvos localmente no dispositivo via DataStore. O aplicativo oferece uma opção de limpeza total para garantir a privacidade do fiel.
+- **Tema Dinâmico**: Suporte total a modo claro, modo escuro e fontes dinâmicas para melhor legibilidade.
 
-**Prerequisites:**  Node.js
+## 🛠️ Tecnologias Utilizadas
 
+- **Linguagem**: [Kotlin](https://kotlinlang.org/)
+- **UI Framework**: [Jetpack Compose](https://developer.android.com/jetpack/compose) (Arquitetura moderna e declarativa)
+- **Arquitetura**: MVVM (Model-View-ViewModel)
+- **Persistência**: [Jetpack DataStore](https://developer.android.com/topic/libraries/architecture/datastore) (Preferências e estados)
+- **Geração de PDF**: `PdfDocument` nativo do Android com suporte a layout multi-coluna.
+- **Injeção de Dependência**: ViewModel padrão com suporte a StateFlow.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 📸 Screenshots
+
+| Início                                               | Exame                                              | Roteiro                                                | Sobre                                              |
+|:----------------------------------------------------:|:--------------------------------------------------:|:------------------------------------------------------:|:--------------------------------------------------:|
+| ![Home](E:\Android\bak\ConfessioAE\img\dasboard.jpg) | ![Exame](E:\Android\bak\ConfessioAE\img\exame.jpg) | ![Roteiro](E:\Android\bak\ConfessioAE\img\roteiro.jpg) | ![Sobre](E:\Android\bak\ConfessioAE\img\sobre.jpg) |
+
+*(Nota: Substitua as imagens acima por prints reais do seu aplicativo após o upload)*
+
+## 📥 Como baixar e rodar o projeto
+
+1. Clone o repositório:
+   
+   ```bash
+   git clone https://github.com/Joaquim1302/Confessio-AE-v2.git
+   ```
+
+2. Abra o projeto no **Android Studio (versão Ladybug ou superior)**.
+
+3. Sincronize o Gradle e execute o aplicativo em um emulador ou dispositivo físico com Android 7.0 (API 24) ou superior.
+
+## 📄 Créditos e Licença
+
+- **Texto Original do Exame de Consciência**: [Arautos do Evangelho](https://www.arautos.org).
+- **Desenvolvimento**: Joaquim.
+- **Licença**: Este projeto é distribuído apenas para fins religiosos e pedagógicos, sem fins lucrativos.
+
+---
+
+*"Vinde a Mim todos vós que estais cansados e oprimidos e Eu vos aliviarei" (Mt 11,28)*
