@@ -15,7 +15,7 @@
 
 ---
 
-## ✨ Funcionalidades
+## Funcionalidades
 
 - **Exame de Consciência Guiado**: Baseado no texto original dos Arautos do Evangelho, o exame é dividido em categorias (Deus, Próximo e Consigo) para facilitar a reflexão.
 - **Registro de Pecados e Dúvidas**: Permite selecionar pecados pré-definidos ou adicionar itens customizados (texto ou voz) que não constam na lista.
@@ -26,20 +26,11 @@
 - **Privacidade e Persistência**: Todos os dados são salvos localmente no dispositivo via DataStore. O aplicativo oferece uma opção de limpeza total para garantir a privacidade do fiel.
 - **Tema Dinâmico**: Suporte total a modo claro, modo escuro e fontes dinâmicas para melhor legibilidade.
 
-Recursos planejados ou considerados para versões futuras:
-
-- melhorias de privacidade;
-- autenticação biométrica;
-- criptografia local;
-- `EncryptedSharedPreferences`;
-- Android Keystore;
-- SQLCipher para dados locais sensíveis;
-- bloqueio de tela interna;
-- opções de limpeza de dados;
-- versão para Apple iOS.
-
-## 🛠️ Tecnologias Utilizadas
-
+## Tecnologias Utilizadas
+- **Ferramentas de IA**:
+  -  Gemini
+  -  ChatGPT
+  - Copilot 
 - **Linguagem**: [Kotlin](https://kotlinlang.org/)
 - **UI Framework**: [Jetpack Compose](https://developer.android.com/jetpack/compose) (Arquitetura moderna e declarativa)
 - **Arquitetura**: MVVM (Model-View-ViewModel)
@@ -47,15 +38,26 @@ Recursos planejados ou considerados para versões futuras:
 - **Geração de PDF**: `PdfDocument` nativo do Android com suporte a layout multi-coluna.
 - **Injeção de Dependência**: ViewModel padrão com suporte a StateFlow.
 
-## 📸 Screenshots
+## Screenshots
 
 | Início                                               | Exame                                              | Roteiro                                                | Sobre                                              |
 |:----------------------------------------------------:|:--------------------------------------------------:|:------------------------------------------------------:|:--------------------------------------------------:|
 | ![Home](https://github.com/Joaquim1302/Confessio-AE-v2/blob/main/screenshots/dasboard.webp) | ![Exame](https://github.com/Joaquim1302/Confessio-AE-v2/blob/main/screenshots/exame.webp) | ![Roteiro](https://github.com/Joaquim1302/Confessio-AE-v2/blob/main/screenshots/roteiro.webp) | ![Sobre](https://github.com/Joaquim1302/Confessio-AE-v2/blob/main/screenshots/sobre.webp) |
 
-*(Nota: Substitua as imagens acima por prints reais do seu aplicativo após o upload)*
+## Futuro do Projeto
 
-## 📥 Como baixar e rodar o projeto
+Recursos planejados ou considerados para versões futuras:
+- melhorias de privacidade;
+- autenticação biométrica;
+- criptografia local;
+- EncryptedSharedPreferences;
+- Android Keystore;
+- SQLCipher para dados locais sensíveis;
+- bloqueio de tela interna;
+- opções de limpeza de dados;
+- versão para Apple iOS.
+
+## Como baixar e rodar o projeto
 
 1. Clone o repositório:
    
@@ -70,7 +72,7 @@ Recursos planejados ou considerados para versões futuras:
 ## 📄 Créditos e Licença
 
 - **Texto Original do Exame de Consciência**: [Arautos do Evangelho](https://www.arautos.org).
-- **Desenvolvimento**: Joaquim.
+- **Desenvolvimento**: Joaquim Marques.
 - **Licença**: Este projeto é distribuído apenas para fins religiosos e pedagógicos, sem fins lucrativos.
 
 ---
